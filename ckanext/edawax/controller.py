@@ -12,6 +12,8 @@ from ckanext.dara.helpers import check_journal_role
 from functools import wraps
 import notifications as n
 
+import re
+import requests
 
 log = logging.getLogger(__name__)
 
@@ -70,6 +72,29 @@ class WorkflowController(PackageController):
 
         redirect(id)
 
+    # this is here, because there was a need for validation upon publication
+    # and not original submission.
+    # An earlier version tried to place valication in 'validators.py'
+    # however, tk.get_action('package_show') calls validation and which caused
+    # an infinite loop.
+    def _check_doi_resolves(self, doi):
+        url = 'http://dx.doi.org/' + doi
+        r = requests.get(url)
+        return r.status_code
+
+    def doi_validator(self, data):
+        value = data['dara_Publication_PID']
+
+        type_ = data['dara_Publication_PIDType']
+        if type_ == 'DOI':
+            pattern = re.compile('^10.\d{4,9}/[-._;()/:a-zA-Z0-9]+$')
+            match = pattern.match(value)
+            if match is None:
+                return 'DOI is invalid. Format should be: 10.xxxx/xxxx....'
+            if self._check_doi_resolves(value) != 200:
+                return "http://dx.doi.org/{} is unreachable.".format(value)
+        return True
+
     @admin_req
     def publish(self, id):
         """
@@ -77,9 +102,17 @@ class WorkflowController(PackageController):
         """
         context = self._context()
         c.pkg_dict = tk.get_action('package_show')(context, {'id': id})
+
+        valid = self.doi_validator(c.pkg_dict)
+        if valid is True:
+            h.flash_success('Dataset published')
+            redirect(id)
+        else:
+            h.flash_error(valid + '\nPlease update the DOI before publishing.')
+            redirect(id)
+
         c.pkg_dict.update({'private': False, 'dara_edawax_review': 'reviewed'})
         tk.get_action('package_update')(context, c.pkg_dict)
-        h.flash_success('Dataset published')
         redirect(id)
 
     @admin_req
