@@ -106,14 +106,12 @@ class WorkflowController(PackageController):
         valid = self.doi_validator(c.pkg_dict)
         if valid is True:
             h.flash_success('Dataset published')
+            c.pkg_dict.update({'private': False, 'dara_edawax_review': 'reviewed'})
+            tk.get_action('package_update')(context, c.pkg_dict)
             redirect(id)
         else:
             h.flash_error(valid + '\nPlease update the DOI before publishing.')
             redirect(id)
-
-        c.pkg_dict.update({'private': False, 'dara_edawax_review': 'reviewed'})
-        tk.get_action('package_update')(context, c.pkg_dict)
-        redirect(id)
 
     @admin_req
     def retract(self, id):
