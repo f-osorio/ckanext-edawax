@@ -7,6 +7,8 @@ body,
   background-color: #f4f4f4;
   background-image: none;
 }
+
+/* font */
 body,
 input,
 button,
@@ -15,15 +17,21 @@ textarea,
 #dara_ {
   font-family: 'Roboto', "Helvetica Neue", Helvetica, Arial, sans-serif !important;
 }
+
+/* search box color */
 .homepage .module-search .module-content {
   background-color: #008fc3;
 }
+
+/* "tag-area" under the search box */
 .homepage .module-search .tags {
   background-color: #005d7a;
 }
+
 a {
   color: #005d95;
 }
+
 h2,
 h3,
 h4,
@@ -31,25 +39,35 @@ h5,
 h6 {
   font-weight: 400 !important;
 }
+
 h1 {
   font-weight: 300;
   font-size: 36px;
   line-height: 1.25em;
 }
+
 h2 {
   font-size: 27px;
 }
+
+/* grid of journals '/journals' */
 .media-grid {
   margin-top: 50px !important;
 }
+
+/* main content of a page */
 #content {
   margin-top: 25px;
 }
+
+/* banner at top of page */
 .account-masthead {
   min-height: 20px;
   color: white;
   background: #008fc3;
 }
+
+/* icons at the right of the banner */
 .account-masthead .account ul li {
   display: block;
   float: left;
@@ -64,11 +82,15 @@ h2 {
   padding: 5px 10px 5px 10px;
   line-height: normal;
 }
+
+/*Icon at top-left*/
 .header-image {
   position: absolute;
   left: 25px;
   top: -2px;
 }
+
+/* options next to search box */
 .masthead a {
   color: #505050 !important;
 }
@@ -102,6 +124,10 @@ h2 {
   font-weight: 400;
   background-color: transparent !important;
 }
+
+/* Resource name next to 'Additional information' 
+ * at the bottom of the resource details page?
+ */
 .nav-item.active > a,
 .nav-aside li.active a {
   position: relative;
@@ -125,6 +151,7 @@ h2 {
     bottom:0;
 }
 */
+/* ??? */
 .row2 {
   margin-top: -200px;
 }
@@ -148,6 +175,8 @@ h2 {
 .results strong {
   font-weight: 300;
 }
+
+/* Datasets/follower counts */
 .context-info .nums dl dd {
   font-size: 30px;
   font-weight: 400;
@@ -157,10 +186,17 @@ h2 {
   font-weight: 400;
   color: #5b0404;
 }
+
+/*
+ * btn  - buttons
+ *label - eg. 'Order by'
+ */
 .btn,
 label {
   font-weight: 500;
 }
+
+/* author names above the title on results page & details page */
 .authors_title {
   margin-bottom: 0px;
   font-style: italic;
@@ -173,6 +209,8 @@ label {
   text-decoration: none;
   color: #005d95;
 }
+
+/* icon that appear next to titles on results page*/
 .label-review {
   background-color: darkorange;
 }
@@ -182,6 +220,8 @@ label {
 .span6 {
   margin-top: 50px !important;
 }
+
+/* footer of pages */
 #zbwfooter {
   text-align: center;
   padding: 10px;
@@ -190,6 +230,8 @@ label {
 #zbwfooter .randl-box {
   margin-top: 50px;
 }
+
+/* links just above the footer */
 #sitelinks {
   margin-bottom: 2em;
   color: #f4f4f4;
