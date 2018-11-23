@@ -79,8 +79,11 @@ class WorkflowController(PackageController):
     # an infinite loop.
     def _check_doi_resolves(self, doi):
         url = 'http://dx.doi.org/' + doi
-        r = requests.get(url)
-        return r.status_code
+        try:
+            r = requests.get(url, timeout=2)
+            return r.status_code
+        except requests.exceptions.Timeout as e:
+            return 400
 
     def doi_validator(self, data):
         value = data['dara_Publication_PID']
