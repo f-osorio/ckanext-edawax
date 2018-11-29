@@ -229,9 +229,11 @@ class EdawaxPlugin(plugins.SingletonPlugin,):
                     action='dashboard_organizations', ckan_icon='building',
                     controller="user")
 
-        # TODO redirects are just temporary, since there are still some routes
+        # DONE: redirects are just temporary, since there are still some routes
         # and links with 'organizations' in ckan. It even might be easier, to
         # simply redirect any organization url and leave the above maps out...
+        # --Redirects have been replaced by updating the templates to link
+        # --directly to where they ought to go.
         #map.redirect('/organization', '/journals')
         #map.redirect('/organization/{url:.*}', '/journals/{url}')
         #map.redirect('/dashboard/organizations', '/dashboard/journals')
