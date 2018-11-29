@@ -1,0 +1,8 @@
+{% ckan_extends %}
+
+{% block link %}
+  {% set url = url|replace('organization', 'journals') %}
+  <a href="{{ url }}" title="{{ _('View {organization_name}').format(organization_name=organization.display_name) }}" class="media-view">
+    <span>{{ _('View {organization_name}').format(organization_name=organization.display_name) }}</span>
+  </a>
+{% endblock %}

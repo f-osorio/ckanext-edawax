@@ -194,7 +194,7 @@ class EdawaxPlugin(plugins.SingletonPlugin,):
         """
         replacing all organization urls with 'journal'
         """
-        map.connect('organizations_index', '/journals', action='index',
+        map.connect('journal_index', '/journals', action='index',
                     controller='organization')
 
         map.connect('/journals/list', action='list', controller="organization")
@@ -225,16 +225,16 @@ class EdawaxPlugin(plugins.SingletonPlugin,):
         map.connect('organization_read', '/journals/{id}', action='read',
                     ckan_icon='sitemap', controller="organization")
 
-        map.connect('user_dashboard_organizations', '/dashboard/journals',
+        map.connect('user_dashboard_journals', '/dashboard/journals',
                     action='dashboard_organizations', ckan_icon='building',
                     controller="user")
 
         # TODO redirects are just temporary, since there are still some routes
         # and links with 'organizations' in ckan. It even might be easier, to
         # simply redirect any organization url and leave the above maps out...
-        map.redirect('/organization', '/journals')
-        map.redirect('/organization/{url:.*}', '/journals/{url}')
-        map.redirect('/dashboard/organizations', '/dashboard/journals')
+        #map.redirect('/organization', '/journals')
+        #map.redirect('/organization/{url:.*}', '/journals/{url}')
+        #map.redirect('/dashboard/organizations', '/dashboard/journals')
 
         # review mail to editor
         map.connect('/dataset/{id}/review',
