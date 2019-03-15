@@ -1,6 +1,8 @@
 {% ckan_extends %}
 {% block header_wrapper %}
 {% resource 'edawax/edawax.css' %}
+{% resource 'edawax/changes.css' %}
+{% resource 'edawax/font.css' %}
 
     {% block header_account %}
         {% resource 'edawax/browser_check.js' %}
@@ -14,7 +16,7 @@
     <header class="masthead">
         <hgroup class="{{ g.header_class }}">
         {% block header_logo %}
-            {{ super() }}
+            <a class="logo" href="/"><img src="/jda-logo.png" alt="ZBW Journal Data Archive" title="ZBW Journal Data Archive" /></a>
         {% endblock %}
         </hgroup>
 
