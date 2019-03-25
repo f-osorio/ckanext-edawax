@@ -89,12 +89,13 @@ body {
 }
 
 .heading {
+    /* This creates a conflict with the information in the side bare*/
     width: 25%;
     float:left;
 }
 
 .search-input {
-    width: 75%;
+    width: 100%; /* 75% */
     float: left;
 
 }
@@ -105,7 +106,7 @@ body {
 }
 
 .search-form {
-    height: 42px;
+    /*height: 42px;*/
 
 }
 

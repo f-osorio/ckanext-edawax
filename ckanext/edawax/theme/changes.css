@@ -88,12 +88,13 @@ body {
 }
 
 .heading {
+    /* This creates a conflict with the information in the side bare*/
     width: 25%;
     float:left;
 }
 
 .search-input {
-    width: 75%;
+    width: 75%; /* 75% */
     float: left;
 
 }
