@@ -5,18 +5,18 @@ html {
 
 
 body {
-    height: 100%;
-    margin: 0;
-    background-repeat: no-repeat;
-    background-attachment: fixed;
-    background: linear-gradient(45deg, #95abc4 0%,#dde4ec 50%,#96acc6 100%);
+    height: 100% !important;
+    margin: 0 !important;
+    background-repeat: no-repeat !important;
+    background-attachment: fixed !important;
+    background: linear-gradient(45deg, #95abc4 0%,#dde4ec 50%,#96acc6 100%) !important;
 
 }
 
 
 
 .hero, .hero::after, [role="main"] {
-    background-color: transparent;  /* remove all colors or transparent */
+    background-color: transparent !important;  /* remove all colors or transparent */
 }
 
 
@@ -33,12 +33,12 @@ body {
 }
 
 .header-image {
-    position: relative;
+    position: relative !important;
     height: 42px;
     background: #fff;
     width: 100%;
-    left: 0;
-    top: 0;
+    left: 0 !important;
+    top: 0 !important;
 }
 
 .header-image img {
@@ -49,9 +49,9 @@ body {
 }
 
 .masthead {
-    background-color: #005d95;
-    height: 122px;
-    background-image: radial-gradient(circle closest-corner at 12% 0px, #81afcb 0%, #005d95 100%);
+    background-color: #005d95 !important;
+    height: 122px !important;
+    background-image: radial-gradient(circle closest-corner at 12% 0px, #81afcb 0%, #005d95 100%) !important;
 }
 
 .masthead .container {
@@ -118,12 +118,11 @@ body {
 }
 
 .homepage .module-search .tags {
-    background-color: rgba(255, 255, 255, 0.4);
-    color: #005d95;
-    border-radius: 6px;
-    margin-left: 128px;
-    box-shadow: 0 2px 0 1px rgba(0,0,0,0.02);
-
+    background-color: rgba(255, 255, 255, 0.4) !important;
+    color: #005d95 !important;
+    border-radius: 6px !important;
+    margin-left: 128px !important;
+    box-shadow: 0 2px 0 1px rgba(0,0,0,0.02) !important;
 }
 
 .box h2, form h3 {
