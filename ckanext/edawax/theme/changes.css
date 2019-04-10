@@ -224,18 +224,20 @@ ul.inline > li, ol.inline > li {
 /************** TABS *******************/
 .navigation {
     margin-left: 242px;
+    position: relative;
+    top: 4px;
 }
 
 .nav-pills > li > a {
     border: none;
-    background-color: #ffffff;
-    color: #005d95;
-    border-radius: 6px 6px 0 0;
+    background-color: #ffffff !important;
+    color: #005d95  !important;
+    border-radius: 6px 6px 0 0 !important;
     box-shadow: none;
-    padding: 10px 20px 10px 20px;
-    margin: 0 1px 0 0 ;
+    padding: 10px 20px 10px 20px !important;
+    margin: 0 1px 0 0 !important;
 }
 
 .nav {
-    margin-bottom: 0;
+    margin-bottom: 0 !important;
 }
