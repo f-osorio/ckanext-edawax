@@ -10,6 +10,7 @@
               id="browser_popover"></span>
 
         {{ super() }}
+
     {% endblock %}
 
 
@@ -38,30 +39,28 @@
 
         <!-- <div class="content"> -->
         <div id="edawax_nav_search" style="float:right;">
-        {% block header_site_navigation %}
-                <nav class="section navigation">
-                <ul class="nav nav-pills">
-                    {% block header_site_navigation_tabs %}
-                    {{ h.build_nav_main(
-                    ('search', _('Datasets')),
-                    ('organizations_index', _('Journals')),
-                    ('info', _('Info')),
-                    ('blog', _('Blog')),
-                    ) }}
-                    {% endblock %}
-                </ul>
-                </nav>
-         {% endblock %}
-
-
         {% block header_site_search %}
             {{ super() }}
         {% endblock %}
         </div>
-        <div />
+        <div>
+        </div>
 
     </div>
         <!--</div> -->
+        {% block header_site_navigation %}
+                <nav class="section navigation">
+                    <ul class="nav nav-pills">
+                        {% block header_site_navigation_tabs %}
+                        {{ h.build_nav_main(
+                        ('search', _('Datasets')),
+                        ('organizations_index', _('Journals')),
+                        ('info', _('Info')),
+                        ) }}
+                        {% endblock %}
+                    </ul>
+                </nav>
+            {% endblock %}
     </header>
 
 

@@ -206,3 +206,36 @@ ul.inline > li, ol.inline > li {
     padding-right: 5%;
 }
 
+
+
+/********* LOGIN *****************/
+.account-masthead .account ul li a{
+    padding-top: 10px;
+    font-size: 16px;
+}
+
+/*************Search*****************/
+.masthead .site-search input{
+    border: none;
+    background-color: #efefef;
+    margin-top:; 4px;
+}
+
+/************** TABS *******************/
+.navigation {
+    margin-left: 242px;
+}
+
+.nav-pills > li > a {
+    border: none;
+    background-color: #ffffff;
+    color: #005d95;
+    border-radius: 6px 6px 0 0;
+    box-shadow: none;
+    padding: 10px 20px 10px 20px;
+    margin: 0 1px 0 0 ;
+}
+
+.nav {
+    margin-bottom: 0;
+}
