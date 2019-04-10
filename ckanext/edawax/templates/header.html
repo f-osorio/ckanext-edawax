@@ -13,43 +13,21 @@
 
     {% endblock %}
 
-
-    <header class="masthead">
-        <hgroup class="{{ g.header_class }}">
-        {% block header_logo %}
-            <a class="logo" href="/"><img src="/jda-logo.png" alt="ZBW Journal Data Archive" title="ZBW Journal Data Archive" /></a>
-        {% endblock %}
-        </hgroup>
+    <hgroup class="{{ g.header_class }}">
+    {% block header_logo %}
+        <a class="logo" href="/"><img src="/jda-logo.png" alt="ZBW Journal Data Archive" title="ZBW Journal Data Archive" /></a>
+    {% endblock %}
+    </hgroup>
 
     {% block header_debug %}
 
         {# {{ super() }} #}
     {% endblock %}
-    <div class="container">
-        {# moved this up since positioning did not work in .container
-        <hgroup class="{{ g.header_class }}">
 
-
-        {% block header_logo %}
-            {{ super() }}
-        {% endblock %}
-
-        </hgroup>
-        #}
-
-        <!-- <div class="content"> -->
-        <div id="edawax_nav_search" style="float:right;">
-        {% block header_site_search %}
-            {{ super() }}
-        {% endblock %}
-        </div>
-        <div>
-        </div>
-
-    </div>
+    {% if request.path != "/" %}
+    <div class="searchcontainer">  {#this closes on a different page#}
         <!--</div> -->
         {% block header_site_navigation %}
-            {#<div class="span12 col1">#}
                 <nav class="section navigation">
                     <ul class="nav nav-pills">
                         {% block header_site_navigation_tabs %}
@@ -61,10 +39,12 @@
                         {% endblock %}
                     </ul>
                 </nav>
-            {#</div>#}
+
         {% endblock %}
 
-    </header>
+    {% endif %}
+
+
 
 
 

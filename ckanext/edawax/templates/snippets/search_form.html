@@ -3,6 +3,8 @@
 {% import 'macros/form.html' as form %}
 {% set sorting = sorting if sorting else [(_('Name Ascending'), 'name asc'), (_('Name Descending'), 'name desc')] %}
 
+{% block search_input %}
+{% endblock %}
 
 {% block search_sortby %}
     {% if sorting %}

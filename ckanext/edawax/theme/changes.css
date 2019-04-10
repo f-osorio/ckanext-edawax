@@ -17,6 +17,14 @@ body {
 }
 
 
+div.module {
+    margin-top: 0;
+}
+
+div.module > form.search-form{
+    border: 0 !important;
+}
+
 
 .hero, .hero::after, [role="main"] {
     background-color: transparent !important;  /* remove all colors or transparent */
@@ -34,6 +42,16 @@ body {
   color: #007bb4;
   background: #ffffff;
 }
+
+
+.searchcontainer {
+    padding-top: 30px;
+    margin-bottom: 20px;
+    background-color: #005d95;
+    height: 182px;
+    background-image: radial-gradient(circle closest-corner at 12% 0px, #81afcb 0%, #005d95 100%);
+}
+
 
 .header-image {
     position: relative !important;
@@ -218,14 +236,12 @@ ul.inline > li, ol.inline > li {
 .masthead .site-search input{
     border: none;
     background-color: #efefef;
-    margin-top:; 4px;
+    margin-top: 4px;
 }
 
 /************** TABS *******************/
 .navigation {
-    margin-left: 242px;
-    position: relative;
-    top: 4px;
+    margin-left: 242px !important;
 }
 
 .nav-pills > li > a {
@@ -238,6 +254,8 @@ ul.inline > li, ol.inline > li {
     margin: 0 1px 0 0 !important;
 }
 
+
 .nav {
     margin-bottom: 0 !important;
 }
+
