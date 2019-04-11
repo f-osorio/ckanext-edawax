@@ -44,7 +44,7 @@ def edawax_facets(facets_dict):
 
 def fake_search():
     """
-        This is used to populate facet_search on pages that don't have it
+        This is used to populate facet_search on pages that don't have tags
         * okfn h.get_facet_items_dict and c.search_facets
     """
     context = {'model': ckan.model, 'session': ckan.model.Session,
@@ -69,9 +69,6 @@ def get_facet_items_dict(facet, limit=3, exclude_active=False,
     (https://github.com/ckan/ckan/issues/3271)
     Also: refactored to be a bit more functional (SCNR)
     '''
-    print('\n==========================')
-    print(facet)
-    print(c.search_facets)
     try:
         f = c.search_facets.get(facet)['items']
     except:

@@ -108,6 +108,21 @@ div.module > form.search-form{
     background: none;
 }
 
+ .module-search {
+    border: none;
+    border-radius: none;
+    margin: 0;
+    background-color: white;
+    padding: 0;
+    width: auto;
+    height: auto;
+    box-shadow: none;
+}
+
+ .module-search {
+    margin-bottom: 20px; /* maybe add the margin to another class */
+    background: none;
+}
 .heading {
     /* This creates a conflict with the information in the side bare*/
     width: 25%;
@@ -146,6 +161,18 @@ div.module > form.search-form{
     box-shadow: 0 2px 0 1px rgba(0,0,0,0.02) !important;
 }
 
+.module-search .module-content {
+    background: linear-gradient(to bottom, rgba(48,149,195,1) 0%, rgba(0,123,180,1) 100%);
+}
+
+.module-search .tags {
+    background-color: rgba(255, 255, 255, 0.4) !important;
+    color: #005d95 !important;
+    border-radius: 6px !important;
+    margin-left: 128px !important;
+    box-shadow: 0 2px 0 1px rgba(0,0,0,0.02) !important;
+}
+
 .box h2, form h3 {
     font-family: 'zbw_binaryregular';
     text-decoration: none;
@@ -177,6 +204,26 @@ form h3 {
     box-shadow: none;
 }
 
+.module-search .search-giant input {
+    border: none;
+}
+
+.tag {
+    border: none;
+    background-color: #007bb4;
+    color: #fff;
+    border-radius: 6px;
+    box-shadow: none;
+}
+
+.module-search .tags a:hover {
+    border: none;
+    background-color: #fff;
+    color: #007bb4;
+    border-radius: 6px;
+    box-shadow: none;
+}
+
 .search-form .search-input input {
     height: 42px;
 }
@@ -198,12 +245,62 @@ form h3 {
     padding: 0px 0;
 }
 
+[role="main"] {
+    padding: 0px 0;
+}
 
 
+/********** TAGS SECTION*****************/
+.module-search .tags h3{
+    font-size: 14px;
+    line-height: 20px;
+    padding: 2px 8px;
+}
+
+.module-search .tags h3 {
+    display: block;
+    float: left;
+    margin: 5px 10px 0 0;
+}
+
+.module-search .tags{
+    padding: 5px 10px 10px 10px;
+}
+
+.module-search .tags .tag{
+    display: block;
+    float: left;
+    margin: 5px 10px 0 0;
+}
+
+.module-search .tags:before,
+.module-search .tags:after{
+    display: table;
+    content: "";
+    line-height: 0;
+}
+
+.module-search .tags:after{
+    clear: both;
+}
+
+.module-search {
+    margin-bottom: 20px !important;
+    background: none;
+}
+/************** END Tags section********************/
 
 
+/************ Search Headin******************/
+.module-search .module-content .heading{
+    margin-top: 0;
+    margin-bottom: 7px;
+    font-size: 24px;
+    line-height: 40px;
+}
 
 
+/************* End Heading*****************/
 
 #sitelinks {
     margin-bottom: 0;
