@@ -253,12 +253,12 @@ form h3 {
 /********** TAGS SECTION*****************/
 .homepage .module-search .tags{
     width: 600px;
-    margin-left: calc((100% - 600px) / 2) !important;;
+    margin-left: calc((100% - 600px) / 2) !important;
 }
 
 .module-search .tags{
     width: 600px;
-    margin-left: calc((100% - 600px) / 2) !important;;
+    margin-left: calc((100% - 600px) / 2) !important;
 }
 
 .module-search .tags h3{
@@ -372,8 +372,12 @@ ul.inline > li, ol.inline > li {
 
 /************** TABS *******************/
 .navigation {
-    margin-left: 242px !important;
+    margin-left: calc((100% - 400px) / 2) !important;
 }
+
+/*.navigation {
+    margin-left: 242px !important;
+}*/
 
 .nav-pills > li > a {
     border: none;
