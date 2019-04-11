@@ -123,7 +123,7 @@ div.module > form.search-form{
     margin-bottom: 20px; /* maybe add the margin to another class */
     background: none;
 }
-.heading {
+.module-search .heading {
     /* This creates a conflict with the information in the side bare*/
     width: 25%;
     float:left;
@@ -289,6 +289,23 @@ form h3 {
     background: none;
 }
 /************** END Tags section********************/
+
+
+/***************  TABS  *******************/
+.nav-pills > li > a{
+    border: 0 !important;
+}
+
+.nav-pills > li:hover{
+    background: #7aabc8 !important;
+    border-radius: 6px 6px 0 0 !important;
+}
+
+.nav-pills > li.active > a {
+    background: #669ec0 !important;
+}
+
+/***************END TABS*******************/
 
 
 /************ Search Headin******************/
