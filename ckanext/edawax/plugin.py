@@ -12,7 +12,9 @@ from ckan.logic.auth.create import resource_create as ckan_resourcecreate
 from ckan.config.middleware import TrackingMiddleware
 # from collections import OrderedDict
 import ckan.lib.helpers as h
-from ckan.common import c, request
+import ckan.logic
+import ckan.model
+from ckan.common import c, request, g
 from toolz.functoolz import compose
 from functools import partial
 from pylons import config
@@ -40,7 +42,26 @@ def edawax_facets(facets_dict):
     return facets_dict
 
 
-def get_facet_items_dict(facet, limit=None, exclude_active=False,
+def fake_search():
+    """
+        This is used to populate facet_search on pages that don't have it
+        * okfn h.get_facet_items_dict and c.search_facets
+    """
+    context = {'model': ckan.model, 'session': ckan.model.Session,
+               'user': c.user, 'autho_user_bj': c.userobj}
+    data_dict = {
+        'q': '*:*',
+        'facet.field': g.facets,
+        'rows': 0,
+        'start': 0,
+        'fq': 'capacity:"public"'
+    }
+    query = ckan.logic.get_action('package_search')(context, data_dict)
+    c.search_facets = query['search_facets']
+
+    return ''
+
+def get_facet_items_dict(facet, limit=3, exclude_active=False,
                          sort_key='count'):
     '''
     Monkey-Patch of ckan/lib/helpers/get_facet_items_dict()
@@ -48,10 +69,17 @@ def get_facet_items_dict(facet, limit=None, exclude_active=False,
     (https://github.com/ckan/ckan/issues/3271)
     Also: refactored to be a bit more functional (SCNR)
     '''
-
+    print('\n==========================')
+    print(facet)
+    print(c.search_facets)
     try:
         f = c.search_facets.get(facet)['items']
     except:
+        try:
+            fake_search()
+            f = c.search_facets.get(facet)['items']
+        except Exception as e:
+            return []
         return []
 
     def active(facet_item):
