@@ -395,7 +395,7 @@ ul.inline > li, ol.inline > li {
 }
 
 
-form.search-form {
+.module-search > form.search-form {
     width: 800px !important;
     padding-left: calc((100% - 800px) / 2) !important;
     padding-right: calc((100% - 800px) / 2) !important;
