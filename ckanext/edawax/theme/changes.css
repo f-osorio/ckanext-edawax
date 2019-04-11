@@ -331,6 +331,11 @@ form h3 {
 
 #zbwfooter {
     text-align: right !important;
+    display: 0 !important;
+}
+
+#zbwfooter ul{
+    display: block;
 }
 
 ul.inline > li, ol.inline > li {
