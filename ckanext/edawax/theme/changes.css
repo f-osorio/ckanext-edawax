@@ -329,6 +329,7 @@ form h3 {
     color: #444444;
 }
 
+/************** START FOOTER ******************/
 #zbwfooter {
     text-align: right !important;
     display: 0 !important;
@@ -337,6 +338,7 @@ form h3 {
 #zbwfooter ul{
     display: block;
 }
+/************** END FOOTER ******************/
 
 ul.inline > li, ol.inline > li {
     padding-left: 0;
