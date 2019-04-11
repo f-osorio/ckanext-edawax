@@ -251,6 +251,16 @@ form h3 {
 
 
 /********** TAGS SECTION*****************/
+.homepage .module-search .tags{
+    width: 600px;
+    margin-left: calc((100% - 600px) / 2) !important;;
+}
+
+.module-search .tags{
+    width: 600px;
+    margin-left: calc((100% - 600px) / 2) !important;;
+}
+
 .module-search .tags h3{
     font-size: 14px;
     line-height: 20px;
@@ -380,3 +390,9 @@ ul.inline > li, ol.inline > li {
     margin-bottom: 0 !important;
 }
 
+
+form.search-form {
+    width: 800px !important;
+    padding-left: calc((100% - 800px) / 2) !important;
+    padding-right: calc((100% - 800px) / 2) !important;
+}
