@@ -10,8 +10,8 @@ html {
 body {
     height: 100% !important;
     margin: 0 !important;
-    background-repeat: no-repeat !important;
-    background-attachment: fixed !important;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
     background: linear-gradient(45deg, #95abc4 0%,#dde4ec 50%,#96acc6 100%) !important;
 
 }
@@ -156,7 +156,7 @@ div.module > form.search-form{
 .homepage .module-search .tags {
     background-color: rgba(255, 255, 255, 0.4) !important;
     color: #005d95 !important;
-    border-radius: 6px !important;
+    border-radius: 6px;
     margin-left: 128px !important;
     box-shadow: 0 2px 0 1px rgba(0,0,0,0.02) !important;
 }
