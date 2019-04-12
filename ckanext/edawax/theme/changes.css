@@ -48,7 +48,6 @@ div.module > form.search-form{
 .searchcontainer {
     padding-top: 38px;
     margin-bottom: 10px;
-    background-color: #005d95;
     height: 172px;
     background-image: radial-gradient(circle closest-corner at 12%-18px, #81afcb 0%, #005d95 100%);
 }
