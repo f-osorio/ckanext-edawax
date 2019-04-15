@@ -20,17 +20,20 @@
   {% endblock %}
 
   {% block resource_item_description %}
-    <p class="description">
-      {%- if res.description -%}{{ h.markdown_extract(res.description, extract_length=80) }}{%- endif -%}
+      <p class="description">
+      {%- if res.description -%}
+          {{ h.markdown_extract(res.description, extract_length=80) }}
+      {%- endif -%}
+      </p>
 
       {# download stats here #}
       {% set total_downloads = h.resource_downloads(res['url']) %}
-      {% if total_downloads > 0 %}
       <div>
+      {% if total_downloads > 0 %}
           {{ _('Downloads') }}: {{ total_downloads }}
-      </div>
       {% endif %}
-    </p>
+      </div>
+
   {% endblock %}
   {% block resource_item_explore %}
   {% if not url_is_edit %}
