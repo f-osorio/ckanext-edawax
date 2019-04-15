@@ -40,7 +40,7 @@ div.module > form.search-form{
 #edawax_nav_search {
   height: 42px;
   color: #007bb4;
-  background: #ffffff;
+  background: #ffffff !important;
 }
 
 
@@ -183,8 +183,8 @@ form h3 {
 
 .homepage .module-search .tags a:hover {
     border: none;
-    background-color: #fff;
-    color: #007bb4;
+    background-color: #fff !important;
+    color: #007bb4 !important;
     border-radius: 6px;
     box-shadow: none;
 }
@@ -196,16 +196,16 @@ form h3 {
 .tag {
     border: none;
     background-color: #007bb4;
-    color: #fff;
+    color: #fff !important;
     border-radius: 6px;
     box-shadow: none;
-    padding: 2px 10px 2px 10px;
+    padding: 2px 10px 2px 10px !important;
 }
 
 .module-search .tags a:hover {
     border: none;
-    background-color: #fff;
-    color: #007bb4;
+    background-color: #fff !important;
+    color: #007bb4 !important;
     border-radius: 6px;
     box-shadow: none;
 }
