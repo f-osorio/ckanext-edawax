@@ -166,11 +166,42 @@ div.module > form.search-form{
 }
 
 
-.box h2, form h3 {
+.box h2, form h3.heading {
     font-family: 'zbw_binaryregular';
     text-decoration: none;
     font-size: 1.8em;
     color: #000000;
+}
+
+h3.heading{
+    color: white !important;
+}
+
+.label-important{
+    background: #333333 !important;
+}
+
+.stages li.active .highlight {
+    background: #2b92c1 !important;
+}
+
+.stages li.active::before{
+    color: #2b92c1 !important;
+}
+
+.stages li.complete .highlight{
+    color: #dcf0fc !important;
+    background: #86c3e8 !important;
+}
+
+.stages li.complete::before{
+    color: #86c3e8 !important;
+}
+
+.stages li.active:after{
+    border-color: rgba(140, 198, 138, 0);
+    border-top-color: #2b92c1;
+    border-bottom-color: #2b92c1;
 }
 
 form h3 {
