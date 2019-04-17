@@ -461,6 +461,7 @@ ul.inline > li, ol.inline > li {
         padding-right: 20px;
     }
 
+    /* move the account stuff below logo */
 
     .account-masthead .account {
         float: none;
@@ -468,6 +469,16 @@ ul.inline > li, ol.inline > li {
         padding-left: 3%;
         background-color: #007bb4;
     }
+
+    .container {
+        height: 29px;
+    }
+
+    .nav-pills {
+        width: 100%
+    }
+
+    /* move the account stuff below logo END */
 
     /* Header */
 
@@ -479,6 +490,8 @@ ul.inline > li, ol.inline > li {
     }
 
     /* TABS, Search field, Tags */
+
+
 
     .navigation { /* TABS placed left */
         margin-left: 0px !important;
