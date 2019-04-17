@@ -1,4 +1,9 @@
 /***************************************************  CHANGES ****************************************************************/
+/* Limit Font */
+body, input, button, select, textarea, #dara_, p{
+    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif !important;
+}
+
 html {
     /*height: 100%;*/
     /* Using this makes the height the size of the browser
@@ -13,7 +18,6 @@ body {
     background-repeat: no-repeat;
     background-attachment: fixed;
     background: linear-gradient(45deg, #95abc4 0%,#dde4ec 50%,#96acc6 100%) !important;
-
 }
 
 
@@ -458,6 +462,13 @@ ul.inline > li, ol.inline > li {
     }
 
 
+    .account-masthead .account {
+        float: none;
+        padding-top: 80px;
+        padding-left: 3%;
+        background-color: #007bb4;
+    }
+
     /* Header */
 
     .header-image img {
@@ -475,11 +486,11 @@ ul.inline > li, ol.inline > li {
 
 
     .module-search .heading {
-        width: 25%;
+        width: 26%;
     }
 
     .search-input {
-        width: 75%;
+        width: 74%;
     }
 
     .module-search > form.search-form {
@@ -496,17 +507,23 @@ ul.inline > li, ol.inline > li {
 
 }
 
-@media (max-width: 500px) {
+@media (max-width: 640px) {
 
-    .module-search .module-content .heading {
-        font-size: 19px;
-    }
+
 
     .module-search .heading {
-        width: 33%;
+        width: 35%;
     }
 
     .search-input {
-        width: 67%;
+        width: 65%;
+    }
+}
+
+@media (max-width: 469px) {
+
+    .homepage .module-search .module-content .heading {
+        line-height: 25px;
+        margin-top: -3px;
     }
 }
