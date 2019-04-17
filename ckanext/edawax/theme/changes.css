@@ -471,7 +471,7 @@ ul.inline > li, ol.inline > li {
     }
 
     .container {
-        height: 30px;
+        height: 29px;
     }
 
     .nav-tabs::before, .nav-pills::before, .nav-tabs::after, .nav-pills::after {
@@ -535,7 +535,7 @@ ul.inline > li, ol.inline > li {
 
 @media (max-width: 469px) {
 
-    .homepage .module-search .module-content .heading {
+    .module-search .module-content .heading {
         line-height: 25px;
         margin-top: -3px;
     }
