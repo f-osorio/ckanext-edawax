@@ -46,9 +46,9 @@ div.module > form.search-form{
 
 /************ SEARCH *****************/
 .searchcontainer {
-    padding-top: 38px;
+    padding-top: 5px;
     margin-bottom: 10px;
-    height: 172px;
+    /*height: 172px;*/
     background-image: radial-gradient(circle closest-corner at 12%-18px, #81afcb 0%, #005d95 100%);
 }
 
@@ -85,7 +85,7 @@ div.module > form.search-form{
     margin-bottom: 7px;
     background-color: white;
     padding-left: 3%;
-    padding-right: 4px;
+    padding-right: 3%;
     padding-bottom: 4px;
     width: auto;
     height: auto;
@@ -439,4 +439,48 @@ ul.inline > li, ol.inline > li {
 /************ Before breadcrumbs ******************/
 #content{
     margin-top: 10px !important;
+}
+
+
+/************* Responseive Settings ***************************/
+/* Mobile Styles*/
+@media only screen and (max-width: 880px){
+    body{
+        padding: 0 !important;
+        border: 0 !important;
+        margin: 0 !important;
+    }
+    .searchcontainer > .navigation {
+        margin-left: 0 !important;
+
+    }
+
+    .searchcontainer > .module-search > form {
+        max-width: 100% !important;
+        min-width: 280px !important;
+    }
+
+    .searchcontainer > .module-search > form > h3{
+        font-size: 16px !important;
+        line-height: 20px !important;
+    }
+
+    .searchcontainer > .module-search > .tags {
+        max-width: calc(100% - 20px);
+        min-width: 280px;
+        margin-left: 0 !important;
+    }
+
+    #sitelinks,
+    #zbwfooter,
+    #zbwfooter > .inline:nth-of-type(2) {
+        max-width: 100% !important;
+        padding: 0 !important;
+        border: 0 !important;
+        margin: 0 !important;
+    }
+
+    .account-masthead .account ul li {
+        clear: both;
+    }
 }
