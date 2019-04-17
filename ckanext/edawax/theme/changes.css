@@ -471,10 +471,10 @@ ul.inline > li, ol.inline > li {
     }
 
     .container {
-        height: 29px;
+        height: 30px;
     }
 
-    .nav-pills {
+    .nav-tabs::before, .nav-pills::before, .nav-tabs::after, .nav-pills::after {
         width: 100%
     }
 
@@ -538,5 +538,27 @@ ul.inline > li, ol.inline > li {
     .homepage .module-search .module-content .heading {
         line-height: 25px;
         margin-top: -3px;
+    }
+}
+
+
+#zbwfooter, #sitelinks {
+    width: 940px !important;
+    margin-right: auto !important;
+    margin-left: auto !important;
+}
+
+
+@media (min-width: 768px) and (max-width:979px) {
+    #zbwfooter, #sitelinks {
+        width: 724px !important;
+    }
+    #zbwfooter > .inline:nth-of-type(2) {
+        width: auto;
+    }
+
+    #sitelinks ul li img {
+        max-width: 60%;
+        width: auto;
     }
 }
