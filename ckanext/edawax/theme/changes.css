@@ -536,11 +536,29 @@ ul.inline > li, ol.inline > li {
 @media (max-width: 469px) {
 
     .module-search .module-content .heading {
-        line-height: 25px;
-        margin-top: -3px;
+        line-height: 25px !important;
+        margin-top: -3px !important;
+    }
+
+}
+
+@media (max-width: 978px){
+    .primary > .module > .module-content > .search-form{
+        height: 80px;
     }
 }
 
+@media (max-width: 768px){
+    .primary > .module > .module-content > .search-form{
+        height: 130px;
+    }
+}
+
+@media (max-width: 332px){
+    .primary > .module > .module-content > .search-form{
+        height: 130px;
+    }
+}
 
 #zbwfooter, #sitelinks {
     width: 940px !important;
