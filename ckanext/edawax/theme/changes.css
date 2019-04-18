@@ -472,7 +472,7 @@ ul.inline > li, ol.inline > li {
         padding-bottom: 15px;
     }
     #zbwfooter{
-        padding: 0 !important;
+        padding: 0;
     }
 
 }
@@ -570,6 +570,10 @@ ul.inline > li, ol.inline > li {
         padding-top: 15px;
     }
 
+    #zbwfooter{
+        padding: 0;
+    }
+
 
 
 }
@@ -592,6 +596,10 @@ ul.inline > li, ol.inline > li {
     .module-search .module-content .heading {
         line-height: 25px !important;
         margin-top: -3px !important;
+    }
+
+    #zbwfooter{
+        padding: 0;
     }
 
 }
