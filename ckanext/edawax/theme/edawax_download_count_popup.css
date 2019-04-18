@@ -37,3 +37,19 @@
     overflow-y: auto;
     max-width: 350px;
 }
+
+
+
+/*** Changes to Font Sizes ***/
+.popover-title{
+    font-size: 20px;
+}
+
+.context-info .nums dl dt{
+    font-size: 16px;
+}
+
+.dataset-list .popover .nums dd{
+    font-size: 14px;
+    line-height: 20px;
+}
