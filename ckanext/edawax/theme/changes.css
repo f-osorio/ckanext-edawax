@@ -446,7 +446,40 @@ ul.inline > li, ol.inline > li {
 }
 
 
-/************* Responseive Settings ***************************/
+/******************************* Responseive Settings **********************************/
+
+#zbwfooter{
+    padding: 0;
+}
+
+#zbwfooter, #sitelinks {
+    width: 940px;
+    margin-right: auto;
+    margin-left: auto;
+}
+
+
+@media (max-width:979px) {
+    #zbwfooter, #sitelinks {
+        width: 724px !important;
+    }
+    #zbwfooter > .inline:nth-of-type(2) {
+        width: auto;
+    }
+
+    #sitelinks ul li img {
+        max-width: 60%;
+        width: auto;
+    }
+
+    #zbwfooter .inline li a img  {
+        padding-bottom: 15px;
+    }
+
+}
+
+
+
 /* Mobile Styles*/
 @media (max-width: 767px) {
 
@@ -470,8 +503,8 @@ ul.inline > li, ol.inline > li {
         background-color: #007bb4;
     }
 
-    .container {
-        height: 29px;
+    .account-masthead .container {
+        height: 30px;
     }
 
     .nav-tabs::before, .nav-pills::before, .nav-tabs::after, .nav-pills::after {
@@ -517,6 +550,28 @@ ul.inline > li, ol.inline > li {
         width: 100%;
     }
 
+    #zbwfooter, #sitelinks {
+        width: 100% !important;
+        padding-left: 0;
+        padding-right: 0;
+
+    }
+
+    #zbwfooter > .inline:nth-of-type(2) {
+        width: auto;
+    }
+
+    #sitelinks ul li img {
+        max-width: 60%;
+        width: auto;
+
+    }
+
+    #zbwfooter .inline li:nth-of-type(1) a img {
+        padding-top: 15px;
+    }
+
+
 
 }
 
@@ -540,43 +595,4 @@ ul.inline > li, ol.inline > li {
         margin-top: -3px !important;
     }
 
-}
-
-@media (max-width: 978px){
-    .primary > .module > .module-content > .search-form{
-        height: 80px;
-    }
-}
-
-@media (max-width: 768px){
-    .primary > .module > .module-content > .search-form{
-        height: 130px;
-    }
-}
-
-@media (max-width: 332px){
-    .primary > .module > .module-content > .search-form{
-        height: 130px;
-    }
-}
-
-#zbwfooter, #sitelinks {
-    width: 940px !important;
-    margin-right: auto !important;
-    margin-left: auto !important;
-}
-
-
-@media (min-width: 768px) and (max-width:979px) {
-    #zbwfooter, #sitelinks {
-        width: 724px !important;
-    }
-    #zbwfooter > .inline:nth-of-type(2) {
-        width: auto;
-    }
-
-    #sitelinks ul li img {
-        max-width: 60%;
-        width: auto;
-    }
 }

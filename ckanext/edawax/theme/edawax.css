@@ -236,3 +236,13 @@ a[target="_blank"]:after {
 .label-reauthor {
   margin-left:10px;
 }
+
+
+/** Update to font sizes **/
+.context-info .nums dl dt{
+  font-size: 14px;
+}
+
+h3{
+  font-size: 20px;
+}
