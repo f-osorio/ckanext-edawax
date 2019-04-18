@@ -448,10 +448,6 @@ ul.inline > li, ol.inline > li {
 
 /******************************* Responseive Settings **********************************/
 
-#zbwfooter{
-    padding: 0;
-}
-
 #zbwfooter, #sitelinks {
     width: 940px;
     margin-right: auto;
@@ -474,6 +470,9 @@ ul.inline > li, ol.inline > li {
 
     #zbwfooter .inline li a img  {
         padding-bottom: 15px;
+    }
+    #zbwfooter{
+        padding: 0;
     }
 
 }
