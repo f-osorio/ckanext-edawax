@@ -474,6 +474,9 @@ ul.inline > li, ol.inline > li {
     #zbwfooter{
         padding: 0;
     }
+    .module > .module-content > .search-form{
+        height: 80px;
+    }
 
 }
 
@@ -574,6 +577,10 @@ ul.inline > li, ol.inline > li {
         padding: 0;
     }
 
+    .module > .module-content > .search-form{
+        height: 110px;
+    }
+
 
 
 }
@@ -602,4 +609,10 @@ ul.inline > li, ol.inline > li {
         padding: 0;
     }
 
+}
+
+@media (max-width: 289px){
+    .module > .module-content > .search-form{
+        height: 130px;
+    }
 }
