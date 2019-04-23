@@ -55,7 +55,7 @@ div.module > form.search-form{
 .searchcontainer {
     padding-top: 5px;
     margin-bottom: 10px;
-    /*height: 172px;*/
+    height: 95px;
     background-image: radial-gradient(circle closest-corner at 12%-18px, #81afcb 0%, #005d95 100%);
 }
 
