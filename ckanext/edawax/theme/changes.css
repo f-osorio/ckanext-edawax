@@ -1,4 +1,7 @@
 /***************************************************  CHANGES ****************************************************************/
+/* Center footer site links */
+
+
 /* Limit Font */
 body, input, button, select, textarea, #dara_, p{
     font-family: "Helvetica Neue", Helvetica, Arial, sans-serif !important;
@@ -357,7 +360,8 @@ form h3 {
 #sitelinks {
     margin-bottom: 0;
     width: 880px; /* has to get the same width as container */
-    margin: auto;
+    /*margin: auto;*/
+    text-align: center;
 }
 
 #sitelinks a {
@@ -477,6 +481,9 @@ ul.inline > li, ol.inline > li {
     .module > .module-content > .search-form{
         height: 80px;
     }
+    fieldset.author{
+        margin-left: 0px;
+    }
 
 }
 
@@ -503,6 +510,10 @@ ul.inline > li, ol.inline > li {
         padding-top: 80px;
         padding-left: 3%;
         background-color: #007bb4;
+    }
+
+    .account-masthead{
+        margin-right:0;
     }
 
     .account-masthead .container {
@@ -574,11 +585,14 @@ ul.inline > li, ol.inline > li {
     }
 
     #zbwfooter{
-        padding: 0;
+        padding: 0 !important;
     }
 
     .module > .module-content > .search-form{
         height: 110px;
+    }
+    .form-actions{
+        text-align: right;
     }
 
 
