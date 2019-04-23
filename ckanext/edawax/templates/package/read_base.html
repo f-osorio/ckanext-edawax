@@ -57,3 +57,9 @@
   {{ h.build_nav_icon('dataset_activity', _('Activity Stream'), id=pkg.name) }}
   {#{ h.build_nav_icon('related_list', _('Related'), id=pkg.name) }#}
 {% endblock %}
+
+
+{% block head_extras -%}
+  {{- super() }}
+  <meta property="og:image" content="{{ h.url('/', locale='default', qualified=true) }}/uploads/group/{{ pkg.organization['image_url'] }}">
+{% endblock -%}
