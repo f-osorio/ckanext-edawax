@@ -53,10 +53,13 @@ div.module > form.search-form{
 
 /************ SEARCH *****************/
 .searchcontainer {
-    padding-top: 5px;
+    /*padding-top: 5px;*/
     margin-bottom: 10px;
     height: 95px;
-    background-image: radial-gradient(circle closest-corner at 12%-18px, #81afcb 0%, #005d95 100%);
+    /*background-image: radial-gradient(circle closest-corner at 12%-18px, #81afcb 0%, #005d95 100%);*/
+    position: relative;
+    top: -75px;
+    background-color: transparent !important;
 }
 
 
@@ -67,6 +70,7 @@ div.module > form.search-form{
     width: 100%;
     left: 0 !important;
     top: 0 !important;
+    padding-bottom: 40px;
 }
 
 .header-image img {
@@ -157,7 +161,8 @@ div.module > form.search-form{
 }
 
 .homepage .module-search .module-content {
-    background: linear-gradient(to bottom, rgba(48,149,195,1) 0%, rgba(0,123,180,1) 100%);
+    /*background: linear-gradient(to bottom, rgba(48,149,195,1) 0%, rgba(0,123,180,1) 100%);*/
+    background-color: #007bb4;
 }
 
 .homepage .module-search .tags {
@@ -169,7 +174,8 @@ div.module > form.search-form{
 }
 
 .module-search .module-content {
-    background: linear-gradient(to bottom, rgba(48,149,195,1) 0%, rgba(0,123,180,1) 100%);
+    /*background: linear-gradient(to bottom, rgba(48,149,195,1) 0%, rgba(0,123,180,1) 100%);*/
+    background-color: #007bb4;
 }
 
 
@@ -270,7 +276,8 @@ form h3 {
 }
 
 [role="main"] {
-    padding: 0px 0;
+    padding: 0px;
+    top: -80px;
 }
 
 
@@ -423,8 +430,8 @@ ul.inline > li, ol.inline > li {
 
 .nav-pills > li > a {
     border: none;
-    background-color: #ffffff !important;
-    color: #005d95  !important;
+    background-color: #007bb4  !important;
+    color: #ffffff !important;
     border-radius: 6px 6px 0 0 !important;
     box-shadow: none;
     padding: 10px 20px 10px 20px !important;
@@ -443,7 +450,6 @@ ul.inline > li, ol.inline > li {
     padding-right: calc((100% - 800px) / 2) !important;
 }
 
-
 /************ Before breadcrumbs ******************/
 #content{
     margin-top: 10px !important;
@@ -458,6 +464,12 @@ ul.inline > li, ol.inline > li {
     margin-left: auto;
 }
 
+
+@media (max-width: 1045px){
+    .navigation{
+        margin-left: calc((100% - 100px) / 2) !important;
+    }
+}
 
 @media (max-width:979px) {
     #zbwfooter, #sitelinks {
@@ -484,6 +496,9 @@ ul.inline > li, ol.inline > li {
     fieldset.author{
         margin-left: 0px;
     }
+    /*.navigation{
+        float: left;
+    }*/
 
 }
 
@@ -492,6 +507,13 @@ ul.inline > li, ol.inline > li {
 /* Mobile Styles */
 @media (max-width: 767px) {
 
+    .searchcontainer{
+        /*top: -35px !important;*/
+    }
+
+    .hero{
+        padding-top: 25px;
+    }
 
     body {  /* main.css remove here */
         padding-left: 0px;
@@ -506,9 +528,9 @@ ul.inline > li, ol.inline > li {
     /* move the account stuff below logo */
 
     .account-masthead .account {
-        float: none;
-        padding-top: 80px;
-        padding-left: 3%;
+        float: right;  /*none;*/
+        /*padding-top: 80px;
+        padding-left: 3%;*/
         background-color: #007bb4;
     }
 
@@ -540,7 +562,7 @@ ul.inline > li, ol.inline > li {
 
 
     .navigation { /* TABS placed left */
-        margin-left: 0px !important;
+        /*margin-left: 0px !important;*/
     }
 
 
@@ -594,21 +616,47 @@ ul.inline > li, ol.inline > li {
     .form-actions{
         text-align: right;
     }
-
-
-
+    [role="main"] {
+        padding: 0px;
+        top: -40px;
+    }
 }
 
+
 @media (max-width: 640px) {
-
-
-
     .module-search .heading {
         width: 35%;
     }
 
     .search-input {
         width: 65%;
+    }
+
+    .navigation{
+        margin-left: calc((100% - 5px) / 2) !important;
+    }
+}
+
+
+@media (max-width: 540px) {
+    .navigation{
+        margin-left: 0px !important;
+    }
+
+    .searchcontainer{
+        top: -35px;
+    }
+}
+
+@media (max-width: 500px) {
+    .account-masthead .account{
+        position: relative;
+        top: 180px;
+        clear: both;
+        width: 100%;
+    }
+    .account-masthead {
+        padding-right: 0px;
     }
 }
 
@@ -623,10 +671,24 @@ ul.inline > li, ol.inline > li {
         padding: 0;
     }
 
+    [role="main"] {
+        top: -10px;
+    }
+
 }
 
 @media (max-width: 289px){
     .module > .module-content > .search-form{
         height: 130px;
+    }
+}
+@media (max-width: 530px){
+    .searchcontainer{
+        top: -35px !important;
+    }
+
+    .naviagtion{
+        clear: both !important;
+        float: left !important;
     }
 }

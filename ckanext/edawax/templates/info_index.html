@@ -1,7 +1,17 @@
 {% extends "page.html" %}
 
 
-{% block subtitle %}{{ 'Info Pages' }}{% endblock %}
+{% block subtitle %}
+    {% if 'contact' in request.path %}
+        Contacts
+    {% elif 'imprint' in request.path %}
+        Imprint
+    {% elif 'data' in request.path %}
+        Data Protection
+    {% else %}
+        Info Pages
+    {% endif %}
+{% endblock %}
 
 {% block breadcrumb_content %}
 {% endblock %}
