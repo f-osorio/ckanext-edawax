@@ -1,3 +1,23 @@
+/* Heading with less stuff */
+input.search {
+    box-shadow: 0px 0px 8px 1px rgba(0, 123, 180, 0.56);
+}
+
+.module-search .module-content{
+    background-color: white !important;
+}
+
+.module-content > h3.heading{
+    color: #007bb4 !important;
+}
+
+.nav-pills > li > a,
+.nav-pills > li.active > a{
+    background: white !important;
+    color: #007bb4 !important;
+    background-color: white !important;
+}
+
 /***************************************************  CHANGES ****************************************************************/
 /* Center footer site links */
 
@@ -336,6 +356,7 @@ form h3 {
 
 
 /***************  TABS  *******************/
+/*
 .nav-pills > li > a{
     border: 0 !important;
 }
@@ -349,6 +370,7 @@ form h3 {
     color: #fff !important;
     background: rgba(48,149,195,1) !important;
 }
+*/
 
 /***************END TABS*******************/
 
@@ -422,6 +444,7 @@ ul.inline > li, ol.inline > li {
 /************** TABS *******************/
 .navigation {
     margin-left: calc((100% - 400px) / 2) !important;
+    background-color: white;
 }
 
 /*.navigation {
@@ -430,12 +453,13 @@ ul.inline > li, ol.inline > li {
 
 .nav-pills > li > a {
     border: none;
-    background-color: #007bb4  !important;
-    color: #ffffff !important;
+    background-color: white /*#007bb4  !important;*/
+    color: #007bb4;/*#ffffff !important;*/
     border-radius: 6px 6px 0 0 !important;
     box-shadow: none;
     padding: 10px 20px 10px 20px !important;
     margin: 0 1px 0 0 !important;
+    border-bottom: 2px solid white;
 }
 
 
