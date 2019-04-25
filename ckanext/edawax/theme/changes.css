@@ -526,10 +526,25 @@ ul.inline > li, ol.inline > li {
 
 }
 
-
-
 /* Mobile Styles */
-@media (max-width: 767px) {
+@media (max-width: 800px) {
+
+    /*.main{
+        position: relative;
+        top: 70px;
+    }*/
+
+    .toolbar .breadcrumb {
+        font-size: 14px;
+    }
+
+    .toolbar .breadcrumb .home{
+        display: inline;
+    }
+
+    .breadcrumb .home .icon-home{
+        font-size: 14px;
+    }
 
     .searchcontainer{
         /*top: -35px !important;*/
@@ -642,7 +657,7 @@ ul.inline > li, ol.inline > li {
     }
     [role="main"] {
         padding: 0px;
-        top: -40px;
+        /*top: -40px;*/
     }
 }
 
@@ -670,17 +685,18 @@ ul.inline > li, ol.inline > li {
     .searchcontainer{
         top: -35px;
     }
-}
 
-@media (max-width: 500px) {
-    .account-masthead .account{
-        position: relative;
-        top: 180px;
-        clear: both;
-        width: 100%;
+    .searchcontainer{
+        top: -35px !important;
     }
-    .account-masthead {
-        padding-right: 0px;
+
+    .naviagtion{
+        clear: both !important;
+        float: left !important;
+    }
+
+    [role="main"] {
+        top: -40px;
     }
 }
 
@@ -699,6 +715,17 @@ ul.inline > li, ol.inline > li {
         top: -10px;
     }
 
+    .account-masthead .account{
+        /*position: relative;
+        top: 180px;*/
+        clear: both;
+        width: 100%;
+    }
+    .account-masthead {
+        padding-right: 0px;
+        height: 80px;
+    }
+
 }
 
 @media (max-width: 289px){
@@ -706,13 +733,5 @@ ul.inline > li, ol.inline > li {
         height: 130px;
     }
 }
-@media (max-width: 530px){
-    .searchcontainer{
-        top: -35px !important;
-    }
 
-    .naviagtion{
-        clear: both !important;
-        float: left !important;
-    }
-}
+
