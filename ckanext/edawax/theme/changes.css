@@ -519,6 +519,15 @@ h1.page-heading{
     margin-bottom: 5px;
 }
 
+p.extra{
+    float: none;
+    background-color: white;
+    margin-bottom: 5px;
+    padding: 10px;
+    margin-top: 0;
+    border-radius: 8px;
+}
+
 /************** END SEARCH FORM *********************/
 
 /************** START Item List ****************/
