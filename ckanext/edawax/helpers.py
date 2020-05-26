@@ -604,8 +604,7 @@ def update_citation(data):
     data = {'id': data['id'], 'dara_related_citation': correct_citation}
     try:
         if correct_citation != '':
-            #tk.get_action('package_patch')(context, data)
-            pass
+            tk.get_action('package_patch')(context, data)
     except Exception as e:
         log.debug('update_citation error: {} {} {}'.format(e, e.message, e.args))
 
