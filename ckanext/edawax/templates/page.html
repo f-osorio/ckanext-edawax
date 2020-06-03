@@ -88,7 +88,7 @@
             {% endblock %}
 
             {% block primary %}
-              {% if h.is_edit_page() %}
+              {% if h.is_edit_page() or '/resource_data/' in request.url %}
                 <div class="primary span12">
               {% else %}
                 <div class="primary span9">
@@ -124,8 +124,12 @@
                           {% block page_primary_action %}{% endblock %}
                         </div>
                       {% endif %}
-                      {% block primary_content_inner %}
-                      {% endblock %}
+
+                      {% if "/resource_data/" in request.url or "/views" in request.url %}
+                        <div class="zbw-box box-bottom">
+                      {% endif %}
+
+                      {% block primary_content_inner %}{% endblock %}
                     </div>
                   </article>
                 {% endblock %}
