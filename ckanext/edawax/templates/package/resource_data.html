@@ -25,7 +25,7 @@
         <strong>{{ _('Error:') }}</strong>
 
         {% if 'pdftables' in status.task_info.error.message %}
-            The DataStore doesn't support pdfs.
+            The DataStore doesn't support pdfs. A preview should already be available.
         {% else %}
             {{ status.task_info.error.message }}
         {% endif %}
