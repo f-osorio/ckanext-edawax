@@ -171,7 +171,7 @@ def count_packages(packages):
 
 
 def normal_height():
-    path = request.upath_info
+    path = request.path
     pages = ['/', '/user/login', '/user/logged_out_redirect', '/user/reset']
     if path in pages:
         return False

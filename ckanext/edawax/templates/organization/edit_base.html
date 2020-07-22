@@ -10,14 +10,14 @@
 
 {% block actions_content %}
   {% if organization and h.check_access('organization_update', {'id': organization.id}) %}
-    <li>{% link_for _('View Journal Datasets'), controller='organization', action='read', id=organization.name, class_='btn', icon='eye-open' %}</li>
+    <li>{% link_for _('View Journal Datasets'), controller='organization', action='read', id=organization.name, class_='btn', icon='eye' %}</li>
   {% endif %}
   {# <li>{% link_for _('History'), controller='organization', action='history', id=organization.name, class_='btn', icon='undo' %}</li> #}
 {% endblock %}
 
 {% block content_action %}
   {% if organization and h.check_access('organization_update', {'id': organization.id}) %}
-    {% link_for _('View Journal'), controller='organization', action='read', id=organization.name, class_='btn', icon='eye-open' %}
+    {% link_for _('View Journal'), controller='organization', action='read', id=organization.name, class_='btn', icon='eye' %}
   {% endif %}
   {# <li>{% link_for _('History'), controller='organization', action='history', id=organization.name, class_='btn', icon='undo' %}</li> #}
 {% endblock %}

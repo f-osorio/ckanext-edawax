@@ -106,7 +106,7 @@
 #}
   {% if h.in_review(package) in ['true', 'editor'] %} {# REVIEWER#}
         <span class="dataset-private label pull-right label-review">
-          <i class="icon-lock"></i>
+          <i class="fa fa-lock"></i>
           {{ 'Review' }}
         </span>
 
@@ -115,7 +115,7 @@
   {% if h.in_review(pkg) == 'reauthor' %}
       <span class="dataset-private label pull-right label-reauthor"
           title="Dataset has been resend to author">
-        <i class="icon-lock"></i>
+        <i class="fa fa-lock"></i>
         {{ 'Re-Author' }}
       </span>
 

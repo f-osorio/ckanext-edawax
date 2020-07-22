@@ -9,7 +9,8 @@ from ckan.logic.auth.update import package_update as ckan_pkgupdate
 from ckan.logic.auth.delete import package_delete as ckan_pkgdelete
 from ckan.logic.auth.delete import resource_delete as ckan_resourcedelete
 from ckan.logic.auth.create import resource_create as ckan_resourcecreate
-from ckan.config.middleware import TrackingMiddleware
+#from ckan.config.middleware import TrackingMiddleware
+from ckan.config.middleware.common_middleware import TrackingMiddleware
 # from collections import OrderedDict
 import ckan.lib.helpers as h
 from ckan.common import c, request
