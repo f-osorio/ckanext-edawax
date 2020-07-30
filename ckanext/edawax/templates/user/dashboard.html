@@ -6,10 +6,13 @@
     {% block page_header %}
       <header class="module-content page-header hug">
         <ul class="nav nav-tabs">
-          {{ h.build_nav_icon('user_dashboard', _('News feed')) }}
+          {#{ h.build_nav_icon('user_dashboard', _('News feed')) }}
           {{ h.build_nav_icon('user_dashboard_datasets', _('My Datasets')) }}
-          {{ h.build_nav_icon('user_dashboard_organizations', _('My Journals')) }}
-   {#       {{ h.build_nav_icon('user_dashboard_groups', _('My Groups')) }} #}
+          {{ h.build_nav_icon('user_dashboard_organizations', _('My Journals')) }#}
+
+          {{ h.build_nav_icon('dashboard.index', _('News feed'), icon='list') }}
+          {{ h.build_nav_icon('dashboard.datasets', _('My Datasets'), icon='sitemap') }}
+          {{ h.build_nav_icon('user_dashboard_organizations', _('My Journals'), icon='book') }}
         </ul>
       </header>
     {% endblock %}
@@ -21,7 +24,8 @@
       {% endif %}
       {% block primary_content_inner %}
         <div data-module="dashboard" class="zbw-box box-bottom">
-          {% snippet 'user/snippets/followee_dropdown.html', context=c.dashboard_activity_stream_context, followees=c.followee_list %}
+          {#% snippet 'user/snippets/followee_dropdown.html', context=c.dashboard_activity_stream_context, followees=c.followee_list %#}
+          {% snippet 'user/snippets/followee_dropdown.html', context=dashboard_activity_stream_context, followees=c.followee_list %}
           <h2 class="page-heading">
             {% block page_heading %}
               {{ _('News feed') }}
@@ -29,7 +33,8 @@
             <small>{{ _("Activity from items that I'm following") }}</small>
           </h2>
           {% block activity_stream %}
-            {{ c.dashboard_activity_stream }}
+            {#{ c.dashboard_activity_stream }#}
+            {{ dashboard_activity_stream|safe }}
           {% endblock %}
         </div>
     {% endblock %}

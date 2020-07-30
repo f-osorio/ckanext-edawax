@@ -95,6 +95,12 @@ def format_resource_items_custom(items):
     return clean_list
 
 
+def chunk(lst, n):
+    """Yield successive n-sized chunks from lst."""
+    for i in range(0, len(lst), n):
+        yield lst[i:i + n]
+
+
 def parse_authors(authors):
     out = ''
     # information is coming from the dataset
@@ -190,7 +196,11 @@ def is_landing_page():
     return True
 
 def is_edit_page():
-    if ('edit' in request.url or 'views' in request.url) and not ('user/edit' in request.url or 'journals/edit' in request.url or 'dataset/edit' in request.url):
+    if ('edit' in request.url or 'views' in request.url) \
+        and not ('user/edit' in request.url \
+            or 'journals/edit' in request.url \
+                or 'dataset/edit' in request.url \
+                    or 'resource_edit/' in request.url):
         return True
 
     return False
@@ -395,7 +405,7 @@ def journal_volume_sorting(packages):
 
 
 def render_infopage(page):
-    template_paths = config['pylons.app_globals'].template_paths
+    template_paths = config['computed_template_paths']
     for path in template_paths:
         if os.path.exists(os.path.join(path, page.encode('utf-8'))):
             return h.render_markdown(tk.render(page), allow_html=True)

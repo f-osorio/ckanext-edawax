@@ -12,7 +12,7 @@
 
 {% block primary_content_inner %}
   <h2 class="hide-heading">{{ _('My Organizations') }}</h2>
-  {% set organizations = h.organizations_available('create_dataset') %}
+  {% set organizations = h.organizations_available('create_dataset', include_dataset_count=true) %}
   {% if organizations %}
     <div class="wide">
       {% snippet "organization/snippets/organization_list.html", organizations=organizations %}

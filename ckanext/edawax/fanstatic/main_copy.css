@@ -1558,24 +1558,31 @@ input.search-query {
 }
 .form-search input,
 .form-inline input,
+.dataset-form input,
 .form-horizontal input,
 .form-search textarea,
 .form-inline textarea,
+.dataset-form textarea,
 .form-horizontal textarea,
 .form-search select,
 .form-inline select,
+.dataset-form select,
 .form-horizontal select,
 .form-search .help-inline,
 .form-inline .help-inline,
+.dataset-form .help-inline,
 .form-horizontal .help-inline,
 .form-search .uneditable-input,
 .form-inline .uneditable-input,
+.dataset-form .uneditable-input,
 .form-horizontal .uneditable-input,
 .form-search .input-prepend,
 .form-inline .input-prepend,
+.dataset-form .input-prepend,
 .form-horizontal .input-prepend,
 .form-search .input-append,
 .form-inline .input-append,
+.dataset-form .input-append,
 .form-horizontal .input-append {
   display: inline-block;
   *display: inline;
@@ -1586,6 +1593,7 @@ input.search-query {
 }
 .form-search .hide,
 .form-inline .hide,
+.dataset-form .hide,
 .form-horizontal .hide {
   display: none;
 }
@@ -1624,36 +1632,52 @@ legend + .control-group {
   margin-top: 20px;
   -webkit-margin-top-collapse: separate;
 }
+
+.dataset-form .form-group,
 .form-horizontal .control-group {
   margin-bottom: 20px;
   *zoom: 1;
 }
+
+.dataset-form .form-group:before,
+.dataset-form .form-group:after,
 .form-horizontal .control-group:before,
 .form-horizontal .control-group:after {
   display: table;
   content: "";
   line-height: 0;
 }
+.dataset-form .form-group:after,
 .form-horizontal .control-group:after {
   clear: both;
 }
+.dataset-form .control-label,
 .form-horizontal .control-label {
   float: left;
   padding-top: 5px;
   text-align: right;
 }
+.dataset-form .controls,
 .form-horizontal .controls {
   *display: inline-block;
   *padding-left: 20px;
   margin-left: 180px;
   *margin-left: 0;
 }
+.dataset-form .controls:first-child,
 .form-horizontal .controls:first-child {
   *padding-left: 180px;
 }
+.dataset-form .help-block,
 .form-horizontal .help-block {
   margin-bottom: 0;
 }
+.dataset-form input + .help-block,
+.dataset-form select + .help-block,
+.dataset-form textarea + .help-block,
+.dataset-form .uneditable-input + .help-block,
+.dataset-form .input-prepend + .help-block,
+.dataset-form .input-append + .help-block,
 .form-horizontal input + .help-block,
 .form-horizontal select + .help-block,
 .form-horizontal textarea + .help-block,
@@ -1662,6 +1686,7 @@ legend + .control-group {
 .form-horizontal .input-append + .help-block {
   margin-top: 10px;
 }
+.dataset-form .form-actions,
 .form-horizontal .form-actions {
   padding-left: 180px;
 }
@@ -2785,7 +2810,7 @@ input[type="submit"].btn.btn-mini {
 }
 .alert {
   padding: 8px 35px 8px 14px;
-  margin-bottom: 20px;
+  margin-bottom: 5px;
   text-shadow: 0 1px 0 rgba(255, 255, 255, 0.5);
   background-color: #fcf8e3;
   border: 1px solid #fbeed5;
@@ -5231,18 +5256,22 @@ a.badge:focus {
   input[type="radio"] {
     border: 1px solid #ccc;
   }
+  .dataset-form .control-label,
   .form-horizontal .control-label {
     float: none;
     width: auto;
     padding-top: 0;
     text-align: left;
   }
+  .dataset-form  .controls,
   .form-horizontal .controls {
     margin-left: 0;
   }
+  .dataset-form .control-list,
   .form-horizontal .control-list {
     padding-top: 0;
   }
+  .dataset-form .form-actions,
   .form-horizontal .form-actions {
     padding-left: 10px;
     padding-right: 10px;
@@ -6284,14 +6313,17 @@ textarea {
     margin-top: 5px;
   }
 }
+.dataset-form .control-label,
 .form-horizontal .control-label {
   width: 120px;
 }
 @media (min-width: 768px) {
+  .dataset-form .controls,
   .form-horizontal .controls {
     margin-left: 130px;
   }
 }
+.dataset-form .info-block,
 .form-horizontal .info-block {
   position: relative;
   display: block;
@@ -6300,19 +6332,24 @@ textarea {
   line-height: 1.3;
   margin-top: 6px;
 }
+.dataset-form .info-help,
 .form-horizontal .info-help {
   padding: 6px 0;
 }
+.dataset-form .info-help:before,
 .form-horizontal .info-help:before {
   display: none;
 }
+.dataset-form .info-help-tight,
 .form-horizontal .info-help-tight {
   margin-top: -10px;
 }
 @media (min-width: 980px) {
+  .dataset-form .info-block,
   .form-horizontal .info-block {
     padding: 6px 0 6px 25px;
   }
+  .dataset-form .info-inline,
   .form-horizontal .info-inline {
     float: right;
     width: 265px;
@@ -6320,15 +6357,18 @@ textarea {
     padding-bottom: 0;
   }
 }
+.dataset-form .control-medium .info-block.info-inline,
 .form-horizontal .control-medium .info-block.info-inline {
   width: 165px;
 }
+.dataset-form .info-block:before,
 .form-horizontal .info-block:before {
   font-size: 2.2em;
   position: absolute;
   left: 0;
   top: 2px;
 }
+.dataset-form .info-inline:before,
 .form-horizontal .info-inline:before {
   top: 8px;
 }
@@ -6338,10 +6378,12 @@ textarea {
   font-size: 22px;
   margin-right: 15px;
 }
+.dataset-form  .info-block a,
 .form-horizontal .info-block a {
   color: #aaaaaa;
   text-decoration: underline;
 }
+.dataset-form .form-actions,
 .form-horizontal .form-actions {
   padding-left: 25px;
   padding-right: 25px;
@@ -9278,6 +9320,7 @@ iframe {
   top: 0;
   right: 0;
 }
+.ie7 .dataset-form .controls,
 .ie7 .form-horizontal .controls {
   margin-left: 0;
 }
@@ -9389,4 +9432,115 @@ iframe {
 }
 .ie7 .media-overlay .media-heading {
   background-color: #000;
+}
+
+p.extra {
+  background-color: white;
+  border-radius: 8px;
+  padding: 5px;
+}
+
+/* New Admin Page */
+#admin-config-form{
+  background-color: white;
+  padding: 10px;
+  border-radius: 0 0 8px 8px;
+}
+
+#admin-config-form .control-label{
+  width: 120px;
+}
+
+#admin-config-form textarea,
+#admin-config-form select,
+#admin-config-form .help-inline,
+#admin-config-form .uneditable-input,
+#admin-config-form .input-prepend,
+#admin-config-form .input-append,{
+  display: inline-block;
+  *display: inline;
+  /* IE7 inline-block hack */
+  *zoom: 1;
+  margin-bottom: 0;
+  vertical-align: middle;
+}
+
+#admin-config-form .hide {
+  display: none;
+}
+
+#admin-config-form .control-group {
+  margin-bottom: 20px;
+  *zoom: 1;
+}
+
+#admin-config-form .control-group:before,
+#admin-config-form .control-group:after {
+  display: table;
+  content: "";
+  line-height: 0;
+}
+
+#admin-config-form .control-group:after {
+  clear: both;
+}
+
+#admin-config-form .control-label {
+  float: left;
+  padding-top: 5px;
+  text-align: right;
+}
+
+#admin-config-form .controls {
+  *display: inline-block;
+  *padding-left: 20px;
+  margin-left: 180px;
+  *margin-left: 0;
+}
+
+#admin-config-form .controls:first-child {
+  *padding-left: 180px;
+}
+
+#admin-config-form .help-block {
+  margin-bottom: 0;
+}
+
+#admin-config-form input + .help-block,
+#admin-config-form select + .help-block,
+#admin-config-form textarea + .help-block,
+#admin-config-form .uneditable-input + .help-block,
+#admin-config-form .input-prepend + .help-block,
+#admin-config-form .input-append + .help-block {
+  margin-top: 10px;
+}
+
+#admin-config-form .form-actions {
+  padding-left: 180px;
+}
+
+#admin-config-form .control-medium .info-block.info-inline {
+  width: 165px;
+}
+#admin-config-form .info-block:before {
+  font-size: 2.2em;
+  position: absolute;
+  left: 0;
+  top: 2px;
+}
+#admin-config-form .info-inline:before {
+  top: 8px;
+}
+#admin-config-form .info-block a {
+  color: #aaaaaa;
+  text-decoration: underline;
+}
+#admin-config-form .form-actions {
+  padding-left: 25px;
+  padding-right: 25px;
+}
+.ie7 #admin-config-form .checkbox {
+  *display: inline;
+  /* IE7 inline-block hack */
+  *zoom: 1;
 }

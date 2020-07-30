@@ -1,0 +1,19 @@
+{% ckan_extends %}
+
+{% block subtitle %}
+  {{ _('Manage') }} -
+    {% if user_dict %}
+      {{ user_dict.display_name }}
+    {% else %}
+      {{ c.user_dict.display_name }}
+    {% endif %}
+  - {{ _('Users') }}
+{% endblock %}
+
+{% block primary_content %}
+  <article class="module">
+    <div class="module-content">
+      {% block primary_content_inner %}{% endblock %}
+    </div>
+  </article>
+{% endblock %}

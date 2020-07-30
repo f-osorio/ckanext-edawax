@@ -317,11 +317,11 @@ class EdawaxPlugin(plugins.SingletonPlugin):
         """
         replacing all organization urls with 'journal'
         """
-        map.connect('organizations_index', '/journals', action='index',
+        map.connect('journals_index', '/journals', action='index',
                     controller='organization')
 
-        map.connect('/journals/list', action='list', controller="organization")
-        map.connect('/journals/new', action='new', controller="organization")
+        map.connect('journals_list', '/journals/list', action='list', controller="organization")
+        map.connect('journals_new', '/journals/new', action='new', controller="organization")
 
         map.connect('/journals/{action}/{id}',
                     requirements=dict(action='|'.join([
@@ -337,19 +337,19 @@ class EdawaxPlugin(plugins.SingletonPlugin):
                     )),
                     controller="organization")
 
-        map.connect('organization_activity', '/journals/activity/{id}',
+        map.connect('journal_activity', '/journals/activity/{id}',
                     action='activity', ckan_icon='time',
                     controller="organization")
 
-        map.connect('organization_about', '/journals/about/{id}',
+        map.connect('journal_about', '/journals/about/{id}',
                     action='about', ckan_icon='info-sign',
                     controller="organization")
 
-        map.connect('organization_read', '/journals/{id}', action='read',
+        map.connect('journal_read', '/journals/{id}', action='read',
                     ckan_icon='sitemap', controller="organization")
 
         map.connect('user_dashboard_organizations', '/dashboard/journals',
-                    action='dashboard_organizations', ckan_icon='building',
+                    action='dashboard_organizations', ckan_icon='book',
                     controller="user")
 
         # TODO redirects are just temporary, since there are still some routes
