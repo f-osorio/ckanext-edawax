@@ -1,3 +1,5 @@
+Dear Editor,
+
 the editorial office of the {{ journal_title }} invites you to serve as an additional editor to manage data submissions within the ZBW Journal Data Archive.
 For this purpose, the {{ journal_title }} has created an account for you.
 

@@ -7,7 +7,7 @@ Role of the new user gets passed down to functions so that a decision can
 be made about which template to use of the email.
 """
 import ckan, random
-from pylons import config
+from ckan.common import config
 import ckan.lib.mailer as mailer
 import ckan.logic.action.create as logic
 from ckan.lib.base import render_jinja2
@@ -68,7 +68,6 @@ def get_invite_body(user, data=None):
     if role in ['editor', 'admin']:
         return render_jinja2('emails/invite_editor.txt', extra_vars)
     return render_jinja2('emails/invite_author.txt', extra_vars)
-    # Add reviewer when needed REVIEWER
 
 
 def send_invite(user, data):
@@ -81,7 +80,7 @@ def send_invite(user, data):
     else:
         role = "Editor"
     # REVIEWER
-    sub = mailer.g.site_title
+    sub = config.get('ckan.site_title')
     subject = mailer._('{} Invite: {}'.format(sub, role))
     mail_user(user, subject, body, {}, role)
 
@@ -126,7 +125,7 @@ def _mail_recipient(recipient_name, recipient_email,
         # REVIEWER
     else:
         recipient_name = recipient_name
-    body = mailer.add_msg_niceties(recipient_name, body, sender_name, sender_url)
+    #body = mailer.add_msg_niceties(recipient_name, body, sender_name, sender_url)
     msg_body = MIMEText(body.encode('utf-8'), 'plain', 'utf-8')
     msg = MIMEMultipart()
     for k, v in headers.items(): msg[k] = v

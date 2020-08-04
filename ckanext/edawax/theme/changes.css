@@ -526,12 +526,21 @@ h1.page-heading{
     color: rgb(0, 123, 180);
 }
 
+
+
 .module-content + div.pagination,
-.module-content div.pagination{
+.module-content div.pagination,
+.module-content + div.pagination-wrapper,
+.module-content div.pagination-wrapper{
     background-color: white;
     border-radius: 8px;
     margin: 0;
 }
+
+.pagination-wrapper {
+    text-align: center;
+    border-top: 1px solid #eeeeee;
+  }
 
 .page-header > .content_action {
     margin-top: 3px;
@@ -914,6 +923,7 @@ form.blank {
     border-radius: 0 0 8px 8px;
 }
 
+#organization-edit-form,
 .form-horizontal {
     border-radius: 0 0 8px 8px;
 }
@@ -927,11 +937,13 @@ form.blank {
     border-radius: 8px;
 }
 
+#organization-edit-form:not(#dataset-edit):not(#resource-edit),
 .form-horizontal:not(#dataset-edit):not(#resource-edit){
     background-color: white;
     padding: 10px;
 }
 
+.dataset-form#organization-edit-form:not(#dataset-edit):not(#resource-edit),
 .dataset-form.form-horizontal:not(#dataset-edit):not(#resource-edit){
     background-color: white;
     padding: 10px;
@@ -1309,6 +1321,7 @@ h1.registration + form {
         margin-left: 60px;
     }
 
+    #organization-edit-form .controls,
     .form-horizontal .controls{
         margin-left: 0;
     }

@@ -1,3 +1,5 @@
+Dear Reviewer,
+
 the editorial office of the {{ journal_title }} invites you to review the replication data of a research article.
 For this purpose, the {{ journal_title }} has created a reviewer account for you.
 

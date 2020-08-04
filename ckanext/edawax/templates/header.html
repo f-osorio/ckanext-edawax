@@ -75,7 +75,7 @@
             {{ h.build_nav_main(
             ('search', _('datasets')),
             ('organizations_index', _('journals')),
-            ('info', _('info')),
+            ('info.index', _('info')),
             ) }}
             {% endblock %}
         </ul>
@@ -90,4 +90,8 @@
     </div>
         <!--</div> -->
     </header>
+{% endblock %}
+
+{% block header_account_notlogged %}
+    <li>{% link_for _('Log in'), named_route='user.login' %}</li>
 {% endblock %}

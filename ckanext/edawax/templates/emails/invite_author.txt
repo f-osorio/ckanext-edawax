@@ -1,3 +1,5 @@
+Dear Author,
+
 the editorial office of the {{ journal_title }} invites you to deposit the replication files of your paper in ZBW's Journal Data Archive.
 For this purpose, the {{ journal_title }} has created an account for you.
 

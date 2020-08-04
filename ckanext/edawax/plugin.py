@@ -16,13 +16,16 @@ import ckan.lib.helpers as h
 from ckan.common import c, request
 from toolz.functoolz import compose
 from functools import partial
-from pylons import config
-from ckanext.dara.helpers import check_journal_role
+from ckan.common import config
+from ckanext.dara.helpers import check_journal_role  # TODO: recreate this helper in edawax
 
 import sqlalchemy as sa
 import new_invites as invites
 import urllib2
 import hashlib
+
+from flask import Blueprint
+import ckanext.edawax.views as views
 
 
 
@@ -241,6 +244,7 @@ class EdawaxPlugin(plugins.SingletonPlugin):
     plugins.implements(plugins.IAuthFunctions)
     plugins.implements(plugins.IActions)
     plugins.implements(plugins.IMiddleware, inherit=True)
+    plugins.implements(plugins.IBlueprint)
 
 
     def make_middleware(self, app, config):
@@ -313,6 +317,22 @@ class EdawaxPlugin(plugins.SingletonPlugin):
                 'get_manual_file': helpers.get_manual_file,
                 }
 
+    def get_blueprint(self):
+        info = Blueprint(u'info', self.__module__, url_prefix=u"/info")
+        info.add_url_rule(u'',
+                          view_func=views.index,
+                          methods=[u'GET'])
+        info.add_url_rule(u'/<id>',
+                          view_func=views.md_page,
+                          methods=[u'GET'])
+
+        #cite = Blueprint(u'citation', self.__module__, url_prefix=u"")
+        #cite.add_url_rule(u'/citation/<type>/<id>',
+        #                    view_func=views.create_citation,
+        #                    methods=[u'GET', u'POST'])
+
+        return [info]
+
     def before_map(self, map):
         """
         replacing all organization urls with 'journal'
@@ -359,6 +379,7 @@ class EdawaxPlugin(plugins.SingletonPlugin):
         map.redirect('/organization', '/journals')
         map.redirect('/organization/{url:.*}', '/journals/{url}')
         map.redirect('/dashboard/organizations', '/dashboard/journals')
+        map.redirect('/user/register', '/')
 
         # review mail to editor
         map.connect('/dataset/{id}/review',
@@ -387,12 +408,14 @@ class EdawaxPlugin(plugins.SingletonPlugin):
 
         # infopages
         controller = 'ckanext.edawax.controller:InfoController'
+        """
         map.connect('info', '/info',
                     action="index",
                     controller=controller,)
         map.connect('/info/{id}',
                     action="md_page",
                     controller=controller,)
+        """
 
         # export citations
         map.connect('/citation/{type}/{id}',
@@ -400,9 +423,9 @@ class EdawaxPlugin(plugins.SingletonPlugin):
                     controller=controller,)
 
         # resource_delete
-        #map.connect('/dataset/{id}/resource_delete/{resource_id}',
-        #            controller="ckanext.edawax.controller:WorkflowController",
-        #            action="resource_delete")
+        map.connect('/dataset/{id}/resource_delete/{resource_id}',
+                    controller="ckanext.edawax.controller:WorkflowController",
+                    action="resource_delete")
 
         return map
 
