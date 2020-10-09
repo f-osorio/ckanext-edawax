@@ -5,7 +5,7 @@
       <ul class="{% block resource_list_class %}resource-list{% endblock %}">
         {% block resource_list_inner %}
           {% for resource in resources %}
-            {% snippet 'package/snippets/resource_item.html', pkg=pkg, res=resource, length=resources|length %}
+            {% snippet 'package/snippets/resource_item.html', pkg=pkg, res=resource %}
           {% endfor %}
         {% endblock %}
 

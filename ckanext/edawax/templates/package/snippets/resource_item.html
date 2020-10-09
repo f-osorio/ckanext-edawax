@@ -1,10 +1,6 @@
 {# can't use ckan_extends here since <li> element is outside block #}
 
-{% if length < 25 %}
-  {% set can_edit = h.check_access('package_update', {'id':pkg.id }) %}
-{% else %}
-  {% set can_edit = False %}
-{% endif %}
+{% set can_edit = h.check_access('package_update', {'id':pkg.id }) %}
 {% set url_action = 'resource_edit' if url_is_edit and can_edit else 'resource_read' %}
 {% set res_url = h.res_abs_url(res) %}
 
@@ -28,7 +24,6 @@
       {%- if res.description -%}{{ h.markdown_extract(res.description, extract_length=80) }}{%- endif -%}
 
       {# download stats here #}
-      {% if length < 25 %}
         {% set total_downloads = h.resource_downloads(res['url']) %}
         {% if total_downloads > 0 %}
           <div class="resource_downloads">
@@ -36,7 +31,6 @@
           </div>
         {% else %}
         {% endif %}
-      {% endif %}
     </p>
   {% endblock %}
   {% block resource_item_explore %}
