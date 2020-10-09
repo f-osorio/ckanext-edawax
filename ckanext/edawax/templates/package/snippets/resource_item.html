@@ -1,6 +1,10 @@
 {# can't use ckan_extends here since <li> element is outside block #}
 
-{% set can_edit = h.check_access('package_update', {'id':pkg.id }) %}
+{% if length < 25 %}
+  {% set can_edit = h.check_access('package_update', {'id':pkg.id }) %}
+{% else %}
+  {% set can_edit = False %}
+{% endif %}
 {% set url_action = 'resource_edit' if url_is_edit and can_edit else 'resource_read' %}
 {% set res_url = h.res_abs_url(res) %}
 
