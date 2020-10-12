@@ -714,9 +714,9 @@ def show_download_all(pkg):
     if not isinstance(pkg, dict):
         return False
     for resource in pkg['resources']:
-        rsc = tk.get_action('resource_show')(None, {'id': resource['id']})
-        if rsc.get('url_type') == 'upload':
+        if resource.get('url_type', False) == 'upload':
             count += 1
+            return True
     return count > 1
 
 """
