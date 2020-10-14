@@ -400,7 +400,11 @@ class WorkflowController(PackageController):
                     zf.writestr(zip_path, content.content)
                 except Exception as e:
                     # adding the citation file
-                    zf.writestr(zip_path, content)
+                    try:
+                        zf.writestr(zip_path, content)
+                    except Exception as e:
+                        log.error('Failed to write to zip: {}'.format(content))
+                        continue
             zf.close()
             response.headers.update({"Content-Disposition": "attachment;filename={}".format(zip_name.encode('utf8'))})
             response.content_type = "application/zip"
