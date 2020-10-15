@@ -1875,6 +1875,12 @@ p.empty {
 }
 
 
-.icon-reply.backwards:before{
+.icon-reply.backwards:before {
     transform: scale(-1, 1);
+}
+
+.scroll-list {
+    overflow:hidden;
+    overflow-y:scroll;
+    height: 500px;
 }

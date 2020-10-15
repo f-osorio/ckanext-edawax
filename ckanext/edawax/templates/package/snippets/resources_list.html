@@ -2,7 +2,7 @@
 
 {% block resource_list %}
     {% if resources %}
-      <ul class="{% block resource_list_class %}resource-list{% endblock %}">
+      <ul class="{% block resource_list_class %}resource-list{% endblock %}{% if resources|length >24 %} scroll-list{% endif %}">
         {% if resources|length < 25 %}
           {% block resource_list_inner %}
             {% for resource in resources %}
