@@ -361,54 +361,56 @@ class WorkflowController(PackageController):
 
 
     def download_all(self, id):
-        data = {}
-        context = self._context()
-        c.pkg_dict = tk.get_action('package_show')(context, {'id': id})
-        zip_sub_dir = 'resources'
-        zip_name = u"{}_resouces_{}.zip".format(c.pkg_dict['title'].replace(' ', '_').replace(',', '_'), time.time())
+        referrer = request.referrer
+        if referrer:
+            data = {}
+            context = self._context()
+            c.pkg_dict = tk.get_action('package_show')(context, {'id': id})
+            zip_sub_dir = 'resources'
+            zip_name = u"{}_resouces_{}.zip".format(c.pkg_dict['title'].replace(' ', '_').replace(',', '_'), time.time())
 
-        resources = c.pkg_dict['resources']
-        for resource in resources:
-            rsc = tk.get_action('resource_show')(context, {'id': resource['id']})
-            if rsc.get('url_type') == 'upload' and not is_robot(request.user_agent):
-                url = resource['url']
-                filename = os.path.basename(url)
-                # custom user agent header so that downloads from here count
-                headers = {
-                    'User-Agent': 'Ckan-Download-All Agent 1.0',
-                    'From': 'journaldata@zbw.eu'
-                }
-                try:
-                    ca_file = config.get('ckan.cert_path')
-                    r = requests.get(url, stream=True, headers=headers,
-                            verify=ca_file)
-                except Exception:
-                    r = requests.get(url, stream=True, headers=headers)
-                if r.status_code != 200:
-                    h.flash_error('Failed to download files.')
-                    redirect(id)
-                else:
-                    data[filename] = r
-
-        data['citation.txt'] = self.create_citataion_text(id)
-        if len(data) > 0:
-            s = StringIO.StringIO()
-            zf = zipfile.ZipFile(s, "w")
-            for item, content in data.items():
-                zip_path = os.path.join(zip_sub_dir, item)
-                try:
-                    zf.writestr(zip_path, content.content)
-                except Exception as e:
-                    # adding the citation file
+            resources = c.pkg_dict['resources']
+            for resource in resources:
+                rsc = tk.get_action('resource_show')(context, {'id': resource['id']})
+                if rsc.get('url_type') == 'upload' and not is_robot(request.user_agent):
+                    url = resource['url']
+                    filename = os.path.basename(url)
+                    # custom user agent header so that downloads from here count
+                    headers = {
+                        'User-Agent': 'Ckan-Download-All Agent 1.0',
+                        'From': 'journaldata@zbw.eu'
+                    }
                     try:
-                        zf.writestr(zip_path, content)
+                        ca_file = config.get('ckan.cert_path')
+                        r = requests.get(url, stream=True, headers=headers,
+                                verify=ca_file)
+                    except Exception:
+                        r = requests.get(url, stream=True, headers=headers)
+                    if r.status_code != 200:
+                        h.flash_error('Failed to download files.')
+                        redirect(id)
+                    else:
+                        data[filename] = r
+
+            data['citation.txt'] = self.create_citataion_text(id)
+            if len(data) > 0:
+                s = StringIO.StringIO()
+                zf = zipfile.ZipFile(s, "w")
+                for item, content in data.items():
+                    zip_path = os.path.join(zip_sub_dir, item)
+                    try:
+                        zf.writestr(zip_path, content.content)
                     except Exception as e:
-                        log.error('Failed to write to zip: {}'.format(content))
-                        continue
-            zf.close()
-            response.headers.update({"Content-Disposition": "attachment;filename={}".format(zip_name.encode('utf8'))})
-            response.content_type = "application/zip"
-            return s.getvalue()
+                        # adding the citation file
+                        try:
+                            zf.writestr(zip_path, content)
+                        except Exception as e:
+                            log.error('Failed to write to zip: {}'.format(content))
+                            continue
+                zf.close()
+                response.headers.update({"Content-Disposition": "attachment;filename={}".format(zip_name.encode('utf8'))})
+                response.content_type = "application/zip"
+                return s.getvalue()
         # if there's nothing to download but someone gets to the download page
         # /download_all, return them to the landing page
         h.flash_error('Nothing to download.')
