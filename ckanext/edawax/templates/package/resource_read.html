@@ -126,6 +126,10 @@
     <li>{% link_for _('Manage'), controller='package', action='resource_edit', id=pkg.name, resource_id=res.id, class_='btn', icon='wrench' %}</li>
   {% endif %}
   {% if res.url and h.is_url(res.url) %}
+    <br>
+    {{ res.has_views }} <br>
+    {{ res.can_be_previewed }} <br>
+    {{ res.url }} <br>
     <li>
       <a class="btn btn-primary resource-url-analytics resource-type-{{ res.resource_type }} split" href="{{ res.url }}">
         {% if res.resource_type in ('listing', 'service') %}

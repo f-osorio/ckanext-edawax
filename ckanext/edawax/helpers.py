@@ -527,7 +527,11 @@ def show_notify_editor_button(pkg):
 
 
 def res_abs_url(res):
-    return res['url'].partition('download/')[0]
+    if 'download/' in res['url']:
+        return res['url'].partition('download/')[0]
+    package_id = res['package_id']
+    resource_id = res['id']
+    return '/dataset/{}/resource/{}'.format(package_id, resource_id)
 
 
 def pkg_abs_url(pkg):
