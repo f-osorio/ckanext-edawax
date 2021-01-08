@@ -385,8 +385,12 @@ class WorkflowController(PackageController):
                         r = requests.get(url, stream=True, headers=headers,
                                 verify=ca_file)
                     except Exception:
-                        r = requests.get(url, stream=True, headers=headers)
-                    if r.status_code != 200:
+                        r = None
+
+                    if hasattr(r, 'status_code') and r.status_code != 200:
+                        h.flash_error('Failed to download files.')
+                        redirect(id)
+                    elif r is None:
                         h.flash_error('Failed to download files.')
                         redirect(id)
                     else:
