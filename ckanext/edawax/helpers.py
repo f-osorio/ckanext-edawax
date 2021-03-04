@@ -746,7 +746,7 @@ def query_crossref(doi):
         try:
             response = requests.get(base_url.format(doi=doi),
                                     headers=headers,
-                                    timeout=3.05)
+                                    timeout=5)
         except requests.exceptions.Timeout as e:
             log.debug('query_crossref error: {} {} {}'.format(e, e.message, e.args))
             return False
@@ -791,7 +791,6 @@ def parse_author(author):
 
 
 def update_citation(data):
-    temp = data['dara_Publication_PID']
     new_citation = build_citation_crossref(data['dara_Publication_PID'])
     correct_citation = correct(new_citation)
     context = {'model': model, 'session': model.Session,

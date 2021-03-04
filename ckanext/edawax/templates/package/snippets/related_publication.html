@@ -14,9 +14,9 @@
  typeof="schema:ScholarlyArticle" resource="{{ url }}" property="dc:relation">
 
 <h3>Related Publication</h3>
-{%- if url -%}                                                      {# DOI has been provided #}
-    {%- if pkg_dict['notes'] != "" -%}                              {# there is an existing citation #}
-        {%- if pid and pid not in pkg_dict['notes'] -%}             {# if citation's doi match provided update the citation #}
+{%- if url -%}                                                                      {# DOI has been provided #}
+    {%- if pkg_dict['dara_related_citation'] != "" -%}                              {# there is an existing citation #}
+        {%- if pid and pid not in pkg_dict['dara_related_citation'] -%}             {# if citation's doi doesn't match provided update the citation #}
             {%- set citation = h.update_citation(pkg_dict) -%}
             {% if citation == '' %}
                 <a href="{{ url }}" property="schema:url">
@@ -25,10 +25,10 @@
             {% else %}
                 {{- citation|safe -}}
             {% endif %}
-        {%- else -%}                                                {# citation matches given DOI #}
-            {{- pkg_dict['notes']|safe -}}
+        {%- else -%}                                                                {# citation matches given DOI, use existing citation #}
+            {{- pkg_dict['dara_related_citation']|safe -}}
         {%- endif -%}
-    {%- else -%}                                                    {# no DOI, try to add one #}
+    {%- else -%}                                                                    {# no DOI, try to add one #}
         {%- set citation = h.update_citation(pkg_dict) -%}
         {{- citation|safe -}}
         <a href="{{ url }}" property="schema:url">
