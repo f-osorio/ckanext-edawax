@@ -48,7 +48,7 @@ msg_body = {
                 u"Dear Editor,\n\n",
                 u"the author, {user}, has uploaded replication files,",
                 u" \"{title},\" to the data archive for your journal, the \"{journal}.\"",
-                u"\n\nYou can review them here: {url}",
+                u"\n\nYou can review them here after logging in: {url}",
                 u"\n{submission_id}",
                 u"\n\nKind regards,\nZBW Journal Data Archive",
             ),
@@ -56,21 +56,21 @@ msg_body = {
                 u"Dear Reviewer ({reviewer_name}),\n\n",
                 u"the editorial office would like you to review\n",
                 u"\"{title},\" in the \"{journal}\".",
-                u"\n\nYou can review it here: {url}",
+                u"\n\nYou can review it here after logging in: {url}",
                 u"\n{submission_id}",
                 u"\n\nKind regards,\nZBW Journal Data Archive",
             ),
             "author": (
                 u"Dear Author,\n\n",
                 u"your submission, \"{title},\" to \"{journal}\" has been",
-                u" {status}. It is available here: {url}.",
+                u" {status}. It is available here{loggin}: {url}.",
                 u"\n\n{message}",
                 u"\n\nKind regards,\nZBW Journal Data Archive",
             ),
             "editor": (
                 u"Dear Editor,\n\n",
                 u"a reviewer has finished reviewing \"{title}\" in your journal,",
-                u" the \"{journal}.\" The submission is available here: {url}.",
+                u" the \"{journal}.\" The submission is available here after logging in: {url}.",
                 u"\n\n{message}",
                 u"\nKind regards,\nZBW Journal Data Archive"
             ),
@@ -79,7 +79,7 @@ msg_body = {
                 u"\nthe Editors of the \"{journal}\" have requested ",
                 u"that you revise your replication files \"{title}\""
                 u" which you submitted to the ZBW Journal Data Archive.\n",
-                u"\nURL: {url}\n",
+                u"\nThe submission is available here after logging in: {url}\n",
                 u"\n{message}\n",
                 u"\nKind regards,\nZBW Journal Data Archive"
             ),
@@ -88,11 +88,11 @@ msg_body = {
                 u"the editor of \"{journal}\" would like you to ",
                 u"relook at the replications files for \"{title}.\"",
                 u"\n{message}\n",
-                u"\n\nYou can review them here: {url}",
+                u"\n\nYou can review them here after logging in: {url}",
                 u"\n{submission_id}",
                 u"\n\nKind regards,\nZBW Journal Data Archive",
             )
-           }
+        }
 
 
 def create_message(msg):
@@ -130,6 +130,10 @@ def notify(typ, dataset, author_mail, msg, context, status=None):
          'message': create_message(msg)}
     if status:
         d['status'] = status
+        if status != 'published':
+            d['loggin'] = " after loggin in"
+        else:
+            d['loggin'] = ""
     body = body.format(**d)
     subject = "{}{}".format(mailer.g.site_title, subjects[typ])
     message = compose_message(typ, body, subject, config, author_mail, context)

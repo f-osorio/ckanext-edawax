@@ -727,7 +727,8 @@ def show_download_all(pkg):
     for resource in pkg['resources']:
         if resource.get('url_type', False) == 'upload':
             count += 1
-            return True
+            if count > 1:
+                return True
     return count > 1
 
 """
