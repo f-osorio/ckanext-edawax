@@ -14,7 +14,6 @@ v2.0.0
 [2021-03-03]
 -   Migrate from Pylons to Flask for CKAN 2.9
 
-
 v1.3.9
 ------
 [2020-07-29]

@@ -124,7 +124,7 @@
                     {% else %}
                       <div class="module-content">
                     {% endif %}
-                      {% if self.page_primary_action() | trim and 'dataset/resources' in request.url %}
+                      {% if self.page_primary_action() | trim and ('dataset/resources' in request.url or 'dataset/collaborators' in request.url) %}
                         <div class="page_primary_action zbw-box box-bottom">
                           {% block page_primary_action %}{% endblock %}
                         </div>

@@ -872,19 +872,24 @@ def correct(citation):
 # ----------------------------------------------------
 def build_citation_local(pkg):
     citation = '{authors} ({year}): {title}. Version {version}. {journal}. Dataset. {url}'
-
-    if not hide_from_reviewer(pkg):
-        for author in ast.literal_eval(pkg['dara_authors'].replace("null", '""')):
-            if author == pkg['dara_authors'][-1]:
-                a = ', '.join(author['lastname'], author['firstname'])
-            else:
-                a = f"{author['lastname']}, {author['firstname']}"
-    else:
-        a = "Witheld for Review"
+    try:
+        if not hide_from_reviewer(pkg):
+            for author in ast.literal_eval(pkg['dara_authors'].replace("null", '""')):
+                if author == pkg['dara_authors'][-1]:
+                    a = ', '.join(author['lastname'], author['firstname'])
+                else:
+                    a = f"{author['lastname']}, {author['firstname']}"
+        else:
+            a = "Witheld for Review"
+    except KeyError:
+        a = ''
     year = pkg['dara_PublicationDate']
     title = pkg['title']
     version = pkg['dara_currentVersion']
-    journal = pkg['organization']['title']
+    try:
+        journal = pkg['organization']['title']
+    except TypeError:
+        journal = ''
     url = f'{config.get("ckan.site_url", "http://127.0.0.1:5000")}/dataset/{pkg["id"]}'
 
     return citation.format(authors=a, year=year, title=title, version=version, journal=journal, url=url)
@@ -958,23 +963,26 @@ def make_schema_metadata(pkg):
                 'distribution': None
             }
     a = []
-    for author in ast.literal_eval(pkg['dara_authors'].replace("null", '""')):
-        a.append({"@type":"Person","name": f"{author['firstname']} {author['lastname']}"})
-    base['author'] = a
-    base['creator'] = a
-    r = []
-    for resource in pkg['resources']:
-        r.append({
-            "@type":"DataDownload",
-            "name": resource['name'],
-            "encodingFormat": guess_mimetype(resource),
-            "contentSize": resource.get('size', 0),
-            "description": resource['description'],
-            "@id": resource['id'],
-            "identifier": f'{config.get("ckan.site_url", "http://127.0.0.1:5000")}/dataset/{pkg["id"]}/resource/{resource["id"]}',
-            "contentUrl": resource['url']
-        })
-    base['distribution'] = r
+    try:
+        for author in ast.literal_eval(pkg['dara_authors'].replace("null", '""')):
+            a.append({"@type":"Person","name": f"{author['firstname']} {author['lastname']}"})
+        base['author'] = a
+        base['creator'] = a
+        r = []
+        for resource in pkg['resources']:
+            r.append({
+                "@type":"DataDownload",
+                "name": resource['name'],
+                "encodingFormat": guess_mimetype(resource),
+                "contentSize": resource.get('size', 0),
+                "description": resource['description'],
+                "@id": resource['id'],
+                "identifier": f'{config.get("ckan.site_url", "http://127.0.0.1:5000")}/dataset/{pkg["id"]}/resource/{resource["id"]}',
+                "contentUrl": resource['url']
+            })
+        base['distribution'] = r
+    except KeyError:
+        return ''
 
     if not test_server_private(pkg):
         return json.dumps(base)
