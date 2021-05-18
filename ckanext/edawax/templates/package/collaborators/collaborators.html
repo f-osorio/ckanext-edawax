@@ -1,5 +1,6 @@
 {% ckan_extends %}
 
+{% block subtitle %}{{ _('Reviewers') }} - {{ super() }}{% endblock %}
 
 {% block page_primary_action %}
   {#% if h.check_access('package_collaborator_create', {'id': pkg_dict.id})%}
@@ -10,9 +11,11 @@
 {% block primary_content_inner %}
   {% set collaborators = h.get_collaborators(pkg_dict['id'])%}
   {% set count = collaborators|length %}
-  {% set collaborators_count = ungettext('{count} collaborator', '{count} collaborators', count).format(count=count) %}
-  <h3 class="page-heading zbw-box box-full">{{ collaborators_count }}</h3>
-  {% link_for _('Add Collaborators'), named_route='dataset.new_collaborator', id=pkg_dict.name, class_='btn btn-primary', icon='plus-square' %}
+  {% set collaborators_count = ungettext('{count} reviewer', '{count} reviewers', count).format(count=count) %}
+  <div class="zbw-box box-bottom">
+    <h3 style="display:inline;">{{ collaborators_count }}</h3>
+    {% link_for _('Add Reviewers'), named_route='dataset.new_collaborator', id=pkg_dict.name, class_='btn btn-primary split right', icon='plus-square' %}
+  </div>
   {# table-bordered #}
   <table class="table table-header table-hover table-bordered zbw-box box-full box-no-padding" style="border-collapse:separate;border-radius:8px;margin-top:5px;">
     <thead>
