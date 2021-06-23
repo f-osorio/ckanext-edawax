@@ -236,7 +236,7 @@ def publish(_id):
         type_ = ''
 
     if type_ == 'DOI':
-        pattern = re.compile('^10.\d{4,9}/[-._;()/:a-zA-Z0-9]+$')
+        pattern = re.compile(r'^10.\d{4,9}/[-._;()/:a-zA-Z0-9]+$')
         match = pattern.match(doi)
         if match is None:
             h.flash_error("""DOI is invalid. Format should be: 10.xxxx/xxxx.
@@ -316,7 +316,8 @@ def editor_notify(_id):
         tk.get_action('package_update')(context_, pkg_dict)
         h.flash_success('Notification sent. Journal Editor will be notified.')
     else:
-        h.flash_error('ERROR: Mail could not be sent. Please try again later or contact the site admin.')
+        h.flash_error("""ERROR: Mail could not be sent. Please try again later
+                         or contact the site admin.""")
     return redirect(_id)
 
 
