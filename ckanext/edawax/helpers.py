@@ -1,41 +1,38 @@
 # -*- coding: utf-8 -*-
 import os
-import six
+import re
 import json
-import hashlib
-import sqlalchemy as sa
-
-import ckan.plugins.toolkit as tk
-import ckan.model as model
-from ckan.common import c, g, streaming_response, _, request, config
-from ckanext.dara.helpers import check_journal_role
-from toolz.itertoolz import unique
-from collections import namedtuple
-from ckan.lib import helpers as h
-# from functools import wraps
 import datetime
 import collections
 import ast
-import requests
+import logging
+import mimetypes
+from urllib.parse import urlparse
+from collections import namedtuple
 
-import flask
-from flask import Response as resp
+import requests
+import sqlalchemy as sa
+from sqlalchemy import and_
 from flask import make_response
 
-import re
+from toolz.itertoolz import unique
+
 import ckanext.edawax.robot_list as _list
-from urllib.parse import urlparse
-
-from ckan.authz import get_group_or_org_admin_ids
-
 from ckanext.dara.geography_coverage import geo
+from ckanext.dara.helpers import check_journal_role
 
-import logging
+import ckan.plugins.toolkit as tk
+import ckan.model as model
+from ckan.common import g, request, config  #_
+from ckan.lib import helpers as h
+
+
+
 log = logging.getLogger(__name__)
 
 
-def pkg_status(id):
-    pkg = tk.get_action('package_show')(None, {'id': id})
+def pkg_status(_id):
+    pkg = tk.get_action('package_show')(None, {'id': _id})
     return pkg['dara_edawax_review']
 
 def get_manual_file():
@@ -61,7 +58,8 @@ def format_resource_items_custom(items):
             out.append(( "9 Temporal Coverage (controlled)", f"{item[1]} to {end}"))
         elif item[0] == u'dara_authors':
             if item[1] in ["[u'', u'', u'', u'', u'']", "['']", ['', '', '', '', '']]:
-                package = tk.get_action('package_show')({'use_cache': False}, {'id': request.url.split('/')[4]})
+                package = tk.get_action('package_show')({'use_cache': False},
+                                {'id': request.url.split('/')[4]})
                 try:
                     authors = ast.literal_eval(package['dara_authors'].replace("null", '""'))
                 except Exception:
@@ -72,11 +70,11 @@ def format_resource_items_custom(items):
                 try:
                     authors = item[1]
                     if isinstance(authors, list):
-                        authors = authors
+                        pass
                     else:
                         authors = ast.literal_eval(authors)
                     out.append(("3 Authors", parse_authors(authors)))
-                except AttributeError as e:
+                except AttributeError:
                     authors = [""]
                     out.append(("3 Authors", ""))
         elif item[0] == u'dara_geographicCoverage':
@@ -85,7 +83,8 @@ def format_resource_items_custom(items):
                 parsed = ast.literal_eval(item[1])
             except ValueError:
                 parsed = item[1]
-            if type(parsed) == list:
+            #if type(parsed) == list:
+            if isinstance(parsed, list):
                 for country in parsed:
                     name = find_geographic_name(country)
                     countries.append(name)
@@ -116,9 +115,9 @@ def chunk(lst, n):
 
 
 def parse_authors(authors):
-    out = ''
     # information is coming from the dataset
-    if type(authors[0]) == dict:   #len(authors) > 1:
+    #if type(authors[0]) == dict:   #len(authors) > 1:
+    if isinstance(authors[0], dict):
         return u' and '.join([f"{author['lastname']}, {author['firstname']}" for author in authors])
     # Information is specific for the resource, and there's more than one
     # author
@@ -185,14 +184,14 @@ def delete_cookies(pkg):
         r.delete_cookie(cookie)
         return r
     except Exception as e:
-        log.debug(f'delete_cookies error: {e}')
+        log.debug('delete_cookies error: %s', e)
 
 
 def _existing_user(pkg):
     """ Check if given reviewer is an existing user """
     user_emails = [obj.email for obj in model.User.all()]
     if '/' in pkg['maintainer']:
-        reviewer_email, reviewer_name = pkg['maintainer'].split('/')
+        reviewer_email, _ = pkg['maintainer'].split('/')
     else:
         reviewer_email = pkg['maintainer']
 
@@ -219,7 +218,7 @@ def get_org_admin(org_id):
                filter(model.Member.table_name == 'user').\
                filter(model.Member.capacity == 'admin')
     except Exception as e:
-        log.debug(f'get_org_admin error: {e}')
+        log.debug('get_org_admin error: %s', e)
         return ''
 
     return [name[0] for name in q.all()]
@@ -236,13 +235,11 @@ def has_reviewers(pkg):
         reviewers.append(reviewer)
         return reviewers[0] not in [None, '']
     except AttributeError as e:
-        log.debug(f'has_reviewers error: {e} {e.message} {e.args}')
+        log.debug('has_reviewers error: %s %s %s', e, e, e.args)
         return False
 
 
 def is_reviewer(pkg):
-    reviewers = []
-
     try:
         reviewer = getattr(pkg, 'maintainer')
     except AttributeError as e:
@@ -250,7 +247,7 @@ def is_reviewer(pkg):
             reviewer = pkg['maintainer']
         except Exception as e:
             if pkg:
-                log.debug(f'is_reviewer error: {e} {e.message} {e.args}')
+                log.debug('is_reviewers error: %s %s %s', e, e, e.args)
             return False
 
     emails = []
@@ -299,10 +296,6 @@ def normal_height():
     return True
 
 
-def pkg_status(id):
-    pkg = tk.get_action('package_show')(None, {'id': id})
-    return pkg['dara_edawax_review']
-
 def tags_exist(data):
     pkg = tk.get_action('package_show')(None, {'id': data.current_package_id})
     if pkg['tags'] != []:
@@ -339,7 +332,6 @@ def is_admin(pkg=None):
         if user_id in admins:
             return True
 
-    from sqlalchemy import and_
     if hasattr(g, 'group'):
         group_id = g.group.id
     else:
@@ -355,8 +347,7 @@ def is_admin(pkg=None):
         if user_id in [a.table_id for a in admins]:
             return True
     except AttributeError as e:
-        log.debug(f'is_admin error: {e} {e.message} {e.args}')
-        pass
+        log.debug('is_admin error: %s %s %s', e, e, e.args)
     return False
 
 
@@ -371,8 +362,8 @@ def has_doi(pkg):
 
 def has_hammer():
     try:
-        return g.userobj.sysadmin == True
-    except AttributeError as e:
+        return g.userobj.sysadmin is True
+    except AttributeError:
         return False
 
 
@@ -396,20 +387,19 @@ def is_published(url):
         if is_private(pck) or in_review(pck) != 'reviewed':
             return False
         return True
-    except Exception as e:
+    except Exception:
         return False
 
 
-def track_download(url, filename, key):
-    prefix = config.get('ckan.site_url', 'http://127.0.0.1:5000')
-    actor = f'Ckan-Download-All::'
+def track_download(url, key):
+    actor = 'Ckan-Download-All::'
     user_key = f'{actor}{key}'
-    engine = sa.create_engine(config.get('sqlalchemy.url'))
+    engine_ = sa.create_engine(config.get('sqlalchemy.url'))
     sql = '''INSERT INTO tracking_raw
                 (user_key, url, tracking_type)
                 VALUES (%s, %s, %s)'''
     try:
-        engine.execute(sql, user_key, url, 'resource')
+        engine_.execute(sql, user_key, url, 'resource')
         return True, None
     except Exception as e:
         return False, e
@@ -490,7 +480,7 @@ def get_user_id():
                 'auth_user_obj': g.userobj}
     user = g.user
     if not user:
-        return
+        return ''
     converter = tk.get_converter('convert_user_name_or_id_to_id')
     return converter(user, context())
 
@@ -507,9 +497,6 @@ def is_private(pkg):
     return pkg.get('private', True)
 
 
-def is_author(pkg):
-    return get_user_id() == pkg['creator_user_id']
-
 def show_change_reviewer(pkg):
     return in_review(pkg) == 'reviewers' and (is_admin(pkg) or has_hammer())
 
@@ -522,8 +509,9 @@ def show_review_button(pkg):
         for reviewer-
     """
     return (get_user_id() == pkg['creator_user_id'] and in_review(pkg) in ['false', 'reauthor']) \
-        or (has_hammer() and not in_review(pkg) in ['reviewers', 'reviewed']) \
-            or (is_admin(pkg) and not (in_review(pkg) in ['false', 'reauthor', 'reviewers', 'reviewed']))
+        or (has_hammer() and in_review(pkg) not in ['reviewers', 'reviewed']) \
+            or (is_admin(pkg) and (in_review(pkg) not in ['false', 'reauthor',
+                                                          'reviewers', 'reviewed']))
 
 
 
@@ -698,12 +686,11 @@ def find_reviewers_datasets(name):
 # They need to be changed to work with 'url' rather than ID #
 # to get the counts for JOURNALs, rather than datasets      #
 #===========================================================#
-import ckan.model as model
 engine = model.meta.engine
 
 _ViewCount = collections.namedtuple("ViewCount", "id name count")
 
-def _total_journal_views(engine, target):
+def _total_journal_views(engine_, target):
     sql = '''
         SELECT p.id,
                p.name,
@@ -716,10 +703,11 @@ def _total_journal_views(engine, target):
         ORDER BY total_views DESC
     '''
 
-    return [_ViewCount(*t) for t in engine.execute(sql, {'name': target, 'url': '/journals/' + target }).fetchall()]
+    return [_ViewCount(*t) for t in engine_.execute(sql, {'name': target,
+                                                        'url': '/journals/' + target }).fetchall()]
 
 
-def _recent_journal_views(engine, target, measure_from):
+def _recent_journal_views(engine_, target, measure_from):
     sql = '''
         SELECT p.id,
                p.name,
@@ -732,10 +720,12 @@ def _recent_journal_views(engine, target, measure_from):
            GROUP BY p.id, p.name
            ORDER BY total_views DESC
     '''
-    return [_ViewCount(*t) for t in engine.execute(sql, name=target, url=f'/journals/{target}', measure_from=str(measure_from)).fetchall()]
+    return [_ViewCount(*t) for t in engine_.execute(sql, name=target,
+                                                    url=f'/journals/{target}',
+                                                    measure_from=str(measure_from)).fetchall()]
 
 
-def _total_data_views(engine, target):
+def _total_data_views(engine_, target):
     sql = '''
         SELECT p.id,
                p.name,
@@ -746,10 +736,10 @@ def _total_data_views(engine, target):
            GROUP BY p.id, p.name
            ORDER BY total_views DESC
     '''
-    return [_ViewCount(*t) for t in engine.execute(sql, name=target).fetchall()]
+    return [_ViewCount(*t) for t in engine_.execute(sql, name=target).fetchall()]
 
 
-def _recent_data_views(engine, measure_from, target):
+def _recent_data_views(engine_, measure_from, target):
     sql = '''
         SELECT p.id,
                p.name,
@@ -761,7 +751,8 @@ def _recent_data_views(engine, measure_from, target):
            GROUP BY p.id, p.name
            ORDER BY total_views DESC
     '''
-    return [_ViewCount(*t) for t in engine.execute(sql, measure_from=str(measure_from), name=target).fetchall()]
+    return [_ViewCount(*t) for t in engine_.execute(sql, measure_from=str(measure_from),
+                                                    name=target).fetchall()]
 
 
 def show_download_all(pkg):
@@ -796,7 +787,7 @@ def query_crossref(doi):
             response = requests.get(base_url.format(doi=doi),
                                     headers=headers, timeout=5)
         except requests.exceptions.Timeout as e:
-            log.debug(f'query_crossref error: {e}')
+            log.debug('query_crossref error: %s', e)
             return False
         if response.status_code == 200:
             return response.json()['message']
@@ -811,7 +802,8 @@ def build_citation_crossref(doi):
         return x is not None
 
     data = query_crossref(doi)
-    citation = u"{authors} ({year}). {title}. {journal}, {volume}({issue}). doi: <a href='https://doi.org/{doi}'>{doi}</a>"
+    citation = u"""{authors} ({year}). {title}. {journal}, {volume}({issue}).
+                     doi: <a href='https://doi.org/{doi}'>{doi}</a>"""
 
     if data:
         try:
@@ -827,7 +819,7 @@ def build_citation_crossref(doi):
             }
             return citation.format(**fields)
         except KeyError as e:
-            log.debug(f'build_citation_crossref error: {e}')
+            log.debug('build_citation_crossref error: %s', e)
 
     return ""
 
@@ -840,7 +832,6 @@ def parse_author(author):
 
 def update_citation(data):
     if data['dara_Publication_PIDType'] in ['DOI', 'doi']:
-        temp = data['dara_Publication_PID']
         new_citation = build_citation_crossref(data['dara_Publication_PID'])
         correct_citation = correct(new_citation)
         context = {'model': model, 'session': model.Session,
@@ -851,7 +842,7 @@ def update_citation(data):
             if correct_citation != '':
                 tk.get_action('package_patch')(context, data)
         except Exception as e:
-            log.debug(f'update_citation error: {e}')
+            log.debug('update_citation error: %s', e)
 
         return correct_citation
     else:
@@ -879,7 +870,7 @@ def build_citation_local(pkg):
     if not hide_from_reviewer(pkg):
         for author in ast.literal_eval(pkg['dara_authors'].replace("null", '""')):
             if author == pkg['dara_authors'][-1]:
-                a = ', '.join(author['lastname'], author['firstname'])
+                a = ', '.join([author['lastname'], author['firstname']])
             else:
                 a = f"{author['lastname']}, {author['firstname']}"
     else:
@@ -890,15 +881,15 @@ def build_citation_local(pkg):
     journal = pkg['organization']['title']
     url = f'{config.get("ckan.site_url", "http://127.0.0.1:5000")}/dataset/{pkg["id"]}'
 
-    return citation.format(authors=a, year=year, title=title, version=version, journal=journal, url=url)
+    return citation.format(authors=a, year=year, title=title, version=version,
+                           journal=journal, url=url)
 
 
 def guess_mimetype(rsc):
     """Some resources are missing the "mimetype"
     """
-    file_name, file_ext = os.path.splitext(rsc['name'])
+    _, file_ext = os.path.splitext(rsc['name'])
     if rsc['mimetype'] is None and file_ext:
-        import mimetypes
         try:
             type_ = mimetypes.types_map[file_ext]
         except KeyError:
@@ -922,47 +913,49 @@ def make_schema_metadata(pkg):
         description = f'{pkg["notes"]} - stored in the Journal Data Archive.'
     else:
         description = pkg['notes']
+    _id = pkg.get('dara_DOI') if pkg.get('dara_DOI') != ''\
+            else f'{config.get("ckan.site_url", "http://127.0.0.1:5000")}/dataset/{pkg["id"]}'
     base = {
-                '@context':'http://schema.org',
-                '@type':'Dataset',
-                '@id': pkg.get('dara_DOI') if pkg.get('dara_DOI') != '' else f'{config.get("ckan.site_url", "http://127.0.0.1:5000")}/dataset/{pkg["id"]}',
-                'identifier': pkg.get('dara_DOI') if pkg.get('dara_DOI') != '' else pkg['id'],
-                'name': pkg['title'],
-                'datePublished': pkg.get('metadata_created', ''),
-                'dateModified': pkg.get('metadata_modified', ''),
-                'version': pkg['dara_currentVersion'],
-                'description': description,
-                'keywords': [x['display_name'] for x in pkg.get('tags')],
-                'citation':{
-                        '@type':'CreativeWork',
-                        'text': build_citation_local(pkg),
-                        'name': pkg['title']
-                },
-                'license':{
-                    "@type":"CreativeWork",
-                    "url":"http://creativecommons.org/licenses/by/4.0",
-                    "text":"CC BY 4.0"
-                },
-                'includedInDataCatalog':{
-                    '@type':'DataCatalog',
-                    'name':'Journal Data Archive',
-                    'url':'https://journaldata.zbw.eu'
-                },
-                'publisher':{
-                    '@type':'Organization',
-                    'name':'ZBW - Leibniz Informationszentrum Wirtschaft'
-                },
-                'provider':{
-                    '@type':'Organization',
-                    'name':'ZBW - Leibniz Informationszentrum Wirtschaft'
-                },
-                'author': None,
-                'creator': None,
-                'distribution': None
+            '@context':'http://schema.org',
+            '@type':'Dataset',
+            '@id': _id,
+            'identifier': pkg.get('dara_DOI') if pkg.get('dara_DOI') != '' else pkg['id'],
+            'name': pkg['title'],
+            'datePublished': pkg.get('metadata_created', ''),
+            'dateModified': pkg.get('metadata_modified', ''),
+            'version': pkg['dara_currentVersion'],
+            'description': description,
+            'keywords': [x['display_name'] for x in pkg.get('tags')],
+            'citation':{
+                    '@type':'CreativeWork',
+                    'text': build_citation_local(pkg),
+                    'name': pkg['title']
+            },
+            'license':{
+                "@type":"CreativeWork",
+                "url":"http://creativecommons.org/licenses/by/4.0",
+                "text":"CC BY 4.0"
+            },
+            'includedInDataCatalog':{
+                '@type':'DataCatalog',
+                'name':'Journal Data Archive',
+                'url':'https://journaldata.zbw.eu'
+            },
+            'publisher':{
+                '@type':'Organization',
+                'name':'ZBW - Leibniz Informationszentrum Wirtschaft'
+            },
+            'provider':{
+                '@type':'Organization',
+                'name':'ZBW - Leibniz Informationszentrum Wirtschaft'
+            },
+            'author': None,
+            'creator': None,
+            'distribution': None
             }
     a = []
     if 'dara_authors' not in pkg.keys():
-        a.append({"@type":"Person","name": f"Name"})
+        a.append({"@type":"Person","name": "Name"})
     else:
         for author in ast.literal_eval(pkg['dara_authors'].replace("null", '""')):
             a.append({"@type":"Person","name": f"{author['firstname']} {author['lastname']}"})
@@ -970,6 +963,8 @@ def make_schema_metadata(pkg):
     base['creator'] = a
     r = []
     for resource in pkg['resources']:
+        base_url = config.get("ckan.site_url", "http://127.0.0.1:5000")
+        identifier = f'{base_url}/dataset/{pkg["id"]}/resource/{resource["id"]}'
         r.append({
             "@type":"DataDownload",
             "name": resource['name'],
@@ -977,7 +972,7 @@ def make_schema_metadata(pkg):
             "contentSize": resource.get('size', 0),
             "description": resource['description'],
             "@id": resource['id'],
-            "identifier": f'{config.get("ckan.site_url", "http://127.0.0.1:5000")}/dataset/{pkg["id"]}/resource/{resource["id"]}',
+            "identifier": identifier,
             "contentUrl": resource['url']
         })
     base['distribution'] = r

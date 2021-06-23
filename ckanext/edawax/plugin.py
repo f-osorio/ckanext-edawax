@@ -1,47 +1,43 @@
 # Hendrik Bunke <h.bunke@zbw.eu>
 # ZBW - Leibniz Information Centre for Economics
+import hashlib
+from functools import partial
+
+import six
+import sqlalchemy as sa
+from flask import Blueprint
+from toolz.functoolz import compose
+
+from ckanext.edawax import helpers
+import ckanext.edawax.views as views
+import ckanext.edawax.new_invites as invites
+from ckanext.dara.helpers import check_journal_role
 
 import ckan
+import ckan.authz as authz
+from ckan.views import group
+import ckan.views.home as home
 import ckan.plugins as plugins
 import ckan.plugins.toolkit as tk
-from ckanext.edawax import helpers
+import ckan.views.dashboard as dash
+from ckan.views.home import index
 from ckan.logic.auth import get_package_object
 from ckan.logic.auth.update import package_update as ckan_pkgupdate
 from ckan.logic.auth.delete import package_delete as ckan_pkgdelete
 from ckan.logic.auth.delete import resource_delete as ckan_resourcedelete
 from ckan.logic.auth.create import resource_create as ckan_resourcecreate
 from ckan.config.middleware.common_middleware import TrackingMiddleware
-
 from ckan.logic.action.get import package_show, resource_show
+from ckan.common import request, config, g
 
-# from collections import OrderedDict
-import ckan.lib.helpers as h
-from ckan.common import c, request, config, g
-from toolz.functoolz import compose
-from functools import partial
-from ckanext.dara.helpers import check_journal_role
-
-import sqlalchemy as sa
-import ckanext.edawax.new_invites as invites
-import hashlib
-
-from flask import Blueprint
-import ckanext.edawax.views as views
-import ckan.views.dashboard as dash
-from ckan.views.home import index
-
-import six
-from six.moves.urllib.parse import unquote, urlparse
-
-import ckan.authz as authz
 
 # Update permissions
 # Member needs "manage_group" to be able to create a dataset
 authz.ROLE_PERMISSIONS['member'] = ['read', 'create_dataset', 'manage_group']
 authz.ROLE_PERMISSIONS['reviewer'] = ['read']  #, 'update_dataset'
 del authz.ROLE_PERMISSIONS['editor'] # remove editor
-authz._trans_role_reviewer = lambda: 'Reviewer'
-authz._trans_role_member = lambda: 'Author'
+authz._trans_role_reviewer = lambda: 'Reviewer' #pylint: disable=W0212
+authz._trans_role_member = lambda: 'Author'     #pylint: disable=W0212
 
 def edawax_facets(facets_dict):
     """
@@ -53,7 +49,7 @@ def edawax_facets(facets_dict):
         del facets_dict['tags']
         del facets_dict['license_id']
         facets_dict.update({'organization': 'Journals'})
-    except:
+    except Exception:
         pass
     return facets_dict
 
@@ -68,7 +64,7 @@ def get_facet_items_dict(facet, limit=None, exclude_active=False,
     '''
     try:
         f = g.search_facets.get(facet)['items']
-    except Exception as e:
+    except Exception:
         return []
 
     def active(facet_item):
@@ -103,7 +99,7 @@ def get_facet_items_dict(facet, limit=None, exclude_active=False,
 def str_to_int(string):
     try:
         i = int(string)
-    except:
+    except Exception:
         i = string
     return isinstance(i, int)
 
@@ -247,15 +243,14 @@ class NewTrackingMiddleware(TrackingMiddleware):
         if the other one runs this one doesn't work as intened. It never
         receives the `/_tracking` path
     """
-    def __init__(self, app, config):
+    def __init__(self, app, config_):  #pylint: disable=W0231
         self.app = app
-        self.config = config
-        self.engine = sa.create_engine(config.get('sqlalchemy.url'))
+        self.config = config_
+        self.engine = sa.create_engine(config_.get('sqlalchemy.url'))
 
 
     def __call__(self, environ, start_response):
         path = environ['PATH_INFO']
-        method = environ.get('REQUEST_METHOD')
         # don't count if it's not the right kind of page or if it's not
         # published
         if helpers.track_path(path) and helpers.is_published(path):
@@ -277,7 +272,7 @@ class NewTrackingMiddleware(TrackingMiddleware):
                     environ.get('HTTP_ACCEPT_LANGUAGE', ''),
                     environ.get('HTTP_ACCEPT_ENCODING', ''),
                 ])
-            except KeyError as e:
+            except KeyError:
                 return self.app(environ, start_response)
             key = hashlib.md5(six.ensure_binary(key)).hexdigest()
             if helpers.is_robot(environ['HTTP_USER_AGENT']):
@@ -358,17 +353,17 @@ class EdawaxPlugin(plugins.SingletonPlugin):
         return labels
 
 
-    def make_middleware(self, app, config):
-        app = NewTrackingMiddleware(app, config)
+    def make_middleware(self, app, config_):
+        app = NewTrackingMiddleware(app, config_)
 
         return app
 
-    def update_config(self, config):
-        tk.add_template_directory(config, 'templates')
-        tk.add_public_directory(config, 'public')
-        tk.add_public_directory(config, 'assets')
-        tk.add_public_directory(config, 'jdainfo/static')
-        tk.add_template_directory(config, 'jdainfo/md')
+    def update_config(self, config_):
+        tk.add_template_directory(config_, 'templates')
+        tk.add_public_directory(config_, 'public')
+        tk.add_public_directory(config_, 'assets')
+        tk.add_public_directory(config_, 'jdainfo/static')
+        tk.add_template_directory(config_, 'jdainfo/md')
         tk.add_resource('assets', 'edawax')
         tk.add_resource('fanstatic', 'edawax_fs')
         #h.get_facet_items_dict = get_facet_items_dict
@@ -445,8 +440,6 @@ class EdawaxPlugin(plugins.SingletonPlugin):
                 }
 
     def get_blueprint(self):
-        from ckan.views import group
-
         info = Blueprint(u'info', self.__module__, url_prefix=u"/info")
         info.add_url_rule(u'',
                           view_func=views.index,
@@ -486,7 +479,7 @@ class EdawaxPlugin(plugins.SingletonPlugin):
         journals.add_url_rule(u'/members/<id>',
                               view_func=group.members,
                               methods=[u'GET', u'POST'])
-        journals.add_url_rule(u'/member_new/<_id>',
+        journals.add_url_rule(u'/member_new/<id>',
                               view_func=views.MembersGroupView.as_view(str(u'member_new')))
         for action in actions:
             journals.add_url_rule(
@@ -518,7 +511,6 @@ class EdawaxPlugin(plugins.SingletonPlugin):
                                  view_func=dash.organizations)
 
         redirect = Blueprint(u'redirect', self.__module__)
-        import ckan.views.home as home
         redirect.add_url_rule(u'/user/register',
                                  view_func=home.index)
 
@@ -528,7 +520,7 @@ class EdawaxPlugin(plugins.SingletonPlugin):
 
         return [info, cite, journals, dataset, dashboard, redirect, landing]
 
-    def group_facets(self, facets_dict, organization_type, package_type):
+    def group_facets(self, facets_dict, group_type, package_type): #pylint: disable=W0613
         # for some reason CKAN does not accept a new OrderedDict here (does
         # not happen with datasets facets!). So we have to modify the original
         # facets_dict
@@ -548,7 +540,7 @@ class EdawaxPlugin(plugins.SingletonPlugin):
 
         return facets_dict
 
-    def dataset_facets(self, facets_dict, package_type):
+    def dataset_facets(self, facets_dict, package_type):   #pylint: disable=W0613
         KEY_VOLUME = 'dara_Publication_Volume'
         KEY_ISSUES = 'dara_Publication_Issue'
         edawax_facets(facets_dict)
