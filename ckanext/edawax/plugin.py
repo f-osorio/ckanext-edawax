@@ -486,7 +486,7 @@ class EdawaxPlugin(plugins.SingletonPlugin):
         journals.add_url_rule(u'/members/<id>',
                               view_func=group.members,
                               methods=[u'GET', u'POST'])
-        journals.add_url_rule(u'/member_new/<id>',
+        journals.add_url_rule(u'/member_new/<_id>',
                               view_func=views.MembersGroupView.as_view(str(u'member_new')))
         for action in actions:
             journals.add_url_rule(
