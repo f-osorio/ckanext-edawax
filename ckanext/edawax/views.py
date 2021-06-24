@@ -460,18 +460,18 @@ def redirect(id):
     return h.redirect_to(u'dataset.read', id=id)
 
 
-def create_citation(type, id):
+def create_citation(kind, id):
     check_access('package_show',
                          {'model': model, 'session': model.Session,
                           'user': g.user or g.author, 'for_view': True,
                           'auth_user_obj': g.userobj},
                           {'id': id})
-    if type == 'ris':
+    if kind == 'ris':
         return create_ris_record(id)
-    elif type == 'bibtex':
+    if kind == 'bibtex':
         return create_bibtex_record(id)
 
-    h.flash_error(f"Couldn't build {type} citation.")
+    h.flash_error(f"Couldn't build {kind} citation.")
     return redirect(id)
 
 
@@ -514,10 +514,6 @@ def create_ris_record(id):
                 authors = pkg_dict['author'] or ''
             authors = ''
     date = pkg_dict.get('dara_PublicationDate', '????')
-    #try:
-    #    journal = pkg_dict['organization']['title']
-    #except TypeError:
-    #    journal = ''
     site_url = config.get('ckan.site_url')
     title = pkg_dict['name']
     url = f'{site_url}/dataset/{title}'
@@ -541,13 +537,15 @@ def create_ris_record(id):
     else:
         jels = ''
 
-    contents = f"""TY  - DATA
-T1  - {title}
-{authors}{doi}{abstract}{jels}ET  - {version}
-PY  - {date}
-PB  - ZBW - Leibniz Informationszentrum Wirtschaft
-UR  - {url}
-ER  -"""
+    contents = (
+                "TY  - DATA"
+                f"\nT1  - {title}"
+                f"\n{authors}{doi}{abstract}{jels}ET  - {version}"
+                f"\nPY  - {date}"
+                "\nPB  - ZBW - Leibniz Informationszentrum Wirtschaft"
+                f"\nUR  - {url}"
+                "\nER  -"
+            )
 
     file = io.BytesIO()
     file.write(str.encode(contents))
@@ -572,10 +570,6 @@ def create_bibtex_record(id):
                 authors = pkg_dict['author'] or ''
             authors = ''
     date = pkg_dict.get('dara_PublicationDate', '????')
-    #try:
-    #    journal = pkg_dict['organization']['title'].encode('utf-8')
-    #except TypeError as e:
-    #    journal = ''
     site_url = config.get('ckan.site_url')
     title = pkg_dict['name']
     url = f'{site_url}/dataset/{title}'
@@ -601,14 +595,16 @@ def create_bibtex_record(id):
     else:
         jels = ''
 
-    contents = f"""@data{{{identifier},
-                \nauthor = {{{authors}}},
-                \npublisher = {{ZBW - Leibniz Informationszentrum Wirtschaft}},
-                \ntitle = {{{title}}},
-                \nyear = {{{date}}},
-                \nversion = {{{version}}},
-                \nurl = {{{url}}}{jels}{doi}
-                \n}}"""
+    contents = (
+                f"@data{{{identifier},"
+                f"\nauthor = {{{authors}}},"
+                "\npublisher = {{ZBW - Leibniz Informationszentrum Wirtschaft}},"
+                f"\ntitle = {{{title}}},"
+                f"\nyear = {{{date}}},"
+                f"\nversion = {{{version}}},"
+                f"\nurl = {{{url}}}{jels}{doi}"
+                "\n}}"
+            )
 
     file = io.BytesIO()
     file.write(str.encode(contents))
@@ -698,10 +694,12 @@ class MembersGroupView(MethodView):
         return h.redirect_to(u'{}.members'.format(group_type), id=id)
 
     def get(self, group_type, is_organization, id=None):
+        print('!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!')
         extra_vars = {}
         set_org(is_organization)
         context_ = self._prepare(id)
         user = request.params.get(u'user')
+        print(user)
         data_dict = {u'id': id}
         data_dict['include_datasets'] = False
         group_dict = _action(u'group_show')(context_, data_dict)
@@ -721,11 +719,13 @@ class MembersGroupView(MethodView):
         g.roles = roles
         g.user_role = user_role
 
-        extra_vars = {
+        extra_vars.update({
             u"group_dict": group_dict,
             u"roles": roles,
             u"user_role": user_role,
-            u"group_type": group_type
-        }
+            u"group_type": group_type,
+            u"user_dict": user_dict
+        })
+        print(extra_vars.keys())
         return base.render(_replace_group_org(u'group/member_new.html'),
                            extra_vars)

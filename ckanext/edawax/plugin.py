@@ -449,7 +449,7 @@ class EdawaxPlugin(plugins.SingletonPlugin):
                           methods=[u'GET'])
 
         cite = Blueprint(u'citation', self.__module__, url_prefix=u"")
-        cite.add_url_rule(u'/citation/<type>/<id>',
+        cite.add_url_rule(u'/citation/<kind>/<id>',
                             view_func=views.create_citation)
 
         actions = [
