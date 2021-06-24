@@ -460,19 +460,19 @@ def redirect(id):
     return h.redirect_to(u'dataset.read', id=id)
 
 
-def create_citation(_type, id):
+def create_citation(type, id):
     check_access('package_show',
                          {'model': model, 'session': model.Session,
                           'user': g.user or g.author, 'for_view': True,
                           'auth_user_obj': g.userobj},
                           {'id': id})
-    if _type == 'ris':
+    if type == 'ris':
         return create_ris_record(id)
-    elif _type == 'bibtex':
+    elif type == 'bibtex':
         return create_bibtex_record(id)
-    else:
-        h.flash_error(f"Couldn't build {_type} citation.")
-        return redirect(id)
+
+    h.flash_error(f"Couldn't build {type} citation.")
+    return redirect(id)
 
 
 def parse_ris_authors(authors):
@@ -516,7 +516,7 @@ def create_ris_record(id):
     date = pkg_dict.get('dara_PublicationDate', '????')
     #try:
     #    journal = pkg_dict['organization']['title']
-    #except TypeError as e:
+    #except TypeError:
     #    journal = ''
     site_url = config.get('ckan.site_url')
     title = pkg_dict['name']
@@ -542,13 +542,12 @@ def create_ris_record(id):
         jels = ''
 
     contents = f"""TY  - DATA
-                \nT1  - {title}
-                \n{authors}{doi}{abstract}{jels}ET  - {version}
-                \nPY  - {date}
-                \nPB  - ZBW - Leibniz Informationszentrum Wirtschaft
-                \nUR  - {url}
-                \nER  -
-                \n"""
+T1  - {title}
+{authors}{doi}{abstract}{jels}ET  - {version}
+PY  - {date}
+PB  - ZBW - Leibniz Informationszentrum Wirtschaft
+UR  - {url}
+ER  -"""
 
     file = io.BytesIO()
     file.write(str.encode(contents))
