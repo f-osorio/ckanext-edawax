@@ -6,26 +6,27 @@ invitations based on the role of the invitee.
 Role of the new user gets passed down to functions so that a decision can
 be made about which template to use of the email.
 """
-import ckan, random
-import ckan.lib.mailer as mailer
-import ckan.logic.action.create as logic
-from ckan.lib.base import render
-
-import ckan.plugins.toolkit as tk
-#imports for expanded mailing
 import os
+import random
 import smtplib
 import logging
 from time import time
+
 from email import utils
-from ckan.common import _, g, request, config, asbool
 from email.header import Header
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 from email.mime.application import MIMEApplication
 
 import ckanext.edawax.helpers as h
-import ckan.lib.helpers as helpers
+
+import ckan
+from ckan.common import _, g, request, config, asbool
+import ckan.lib.mailer as mailer
+import ckan.logic.action.create as logic
+from ckan.lib.base import render
+import ckan.plugins.toolkit as tk
+
 
 log = logging.getLogger(__name__)
 
@@ -36,7 +37,7 @@ class MailerException(Exception):
 
 def _get_user_role(user_name, org_id):
     data_dict = {'id': org_id}
-    org_data = user_data = ckan.logic.get_action('organization_show')(data_dict=data_dict)
+    org_data = ckan.logic.get_action('organization_show')(data_dict=data_dict)
     users = org_data['users']
     for user in users:
         if user['name'] == user_name:
@@ -48,7 +49,7 @@ def get_invite_body(user, data=None):
     try:
         id_ = data['group_id']
     except Exception as e:
-        log.error('Error Creating invite -couldn\'t find group_id in data- {e}')
+        log.error('Error Creating invite -couldn\'t find group_id in data- %s', e)
         id_ = request.view_args['id']
     site_url = config.get('ckan.site_url')
     url_ = tk.url_for("dataset.read", id=id_)
@@ -92,12 +93,12 @@ def user_invite(context, data_dict):
     Recreated from logic.create with one addition to pass the user's data
     to send_invite
     """
-    log.debug(f"--Starting Invitation Process--")
-    log.debug(f"{data_dict}")
+    log.debug("--Starting Invitation Process--")
+    log.debug("%s", data_dict)
     logic._check_access('user_invite', context, data_dict)
-    schema = context.get('schema', ckan.logic.schema.default_user_invite_schema())
+    schema = context.get('schema', ckan.logic.schema.default_user_invite_schema()) #pylint: disable=no-value-for-parameter
     data, errors = logic._validate(data_dict, schema, context)
-    log.error(f'Errors: {errors}')
+    log.error("Errors: %s", errors)
     if errors:
         raise logic.ValidationError(errors)
     name = logic._get_random_username_from_email(data['email'])
@@ -107,7 +108,7 @@ def user_invite(context, data_dict):
     data['state'] = ckan.model.State.PENDING
     try:
         user_dict = logic._get_action('user_create')(context, data)
-        log.debug(f"Created new user: {user_dict['id']}")
+        log.debug("Created new user: %s", user_dict['id'])
         user = ckan.model.User.get(user_dict['id'])
         member_dict = {'username': user.id,
                     'id': data['group_id'],
@@ -115,17 +116,17 @@ def user_invite(context, data_dict):
         org_info = logic._get_action('organization_show')(context, member_dict)
         data['journal_title'] = org_info['display_name']
         logic._get_action('group_member_create')(context, member_dict)
-        log.debug(f"Sending Invite")
+        log.debug("Sending Invite")
         send_invite(user, data)
         return logic.model_dictize.user_dictize(user, context)
     except ckan.logic.ValidationError as e:
-        log.error(f"Ran into ValidationError: {e}")
+        log.error("Ran into ValidationError: %s", e)
         return {'name': False}
 
 
 # modifying CKAN's base mail function to allow sending attachments
-def _mail_recipient(recipient_name, recipient_email,
-        sender_name, sender_url, subject,
+def _mail_recipient(recipient_name, recipient_email, #pylint: disable=dangerous-default-value
+        sender_name, sender_url, subject,            #pylint: disable=unused-argument
         body, headers={}, role=None):
     mail_from = config.get('smtp.mail_from')
     if role:
@@ -136,11 +137,11 @@ def _mail_recipient(recipient_name, recipient_email,
         else:
             recipient_name = "Editor"
     else:
-        recipient_name = recipient_name
-    #body = mailer.add_msg_niceties(recipient_name, body, sender_name, sender_url)
+        pass
     msg_body = MIMEText(body.encode('utf-8'), 'plain', 'utf-8')
     msg = MIMEMultipart()
-    for k, v in headers.items(): msg[k] = v
+    for k, v in headers.items():
+        msg[k] = v
     subject = Header(subject.encode('utf-8'), 'utf-8')
     msg['Subject'] = subject
     msg['From'] = _("%s <%s>") % (sender_name, mail_from)
@@ -207,27 +208,27 @@ def _mail_recipient(recipient_name, recipient_email,
             smtp_connection.login(smtp_user, smtp_password)
 
         smtp_connection.sendmail(mail_from, [recipient_email], msg.as_string())
-        log.info(f"Sent email to {recipient_email}")
+        log.info("Sent email to %s", recipient_email)
 
     except smtplib.SMTPException as e:
         msg = '%r' % e
         log.exception(msg)
-        raise MailerException(msg)
+        raise MailerException(msg) from e
     finally:
         smtp_connection.quit()
 
 
-def mail_recipient(recipient_name, recipient_email, subject,
+def mail_recipient(recipient_name, recipient_email, subject, #pylint: disable=dangerous-default-value
         body, headers={}, role=None):
     if role is not None:
         return _mail_recipient(recipient_name, recipient_email,
-            g.site_title, g.site_url, subject, body, headers=headers, role=role)
+            g.site_title, g.site_url, subject, body, headers, role)
     return _mail_recipient(recipient_name, recipient_email,
-            g.site_title, g.site_url, subject, body, headers=headers)
+            g.site_title, g.site_url, subject, body, headers)
 
 
-def mail_user(recipient, subject, body, headers={}, role=None):
-    if (recipient.email is None) or not len(recipient.email):
+def mail_user(recipient, subject, body, headers={}, role=None): #pylint: disable=dangerous-default-value
+    if (recipient.email is None) or not len(recipient.email):   #pylint: disable=len-as-condition
         raise MailerException(_("No recipient email address available!"))
     name = recipient.display_name
 

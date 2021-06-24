@@ -443,10 +443,6 @@ form.add-member-form .controls {
     width: 100% !important;
 }
 
-#s2id_role{
-    width: 230px !important;
-}
-
 .add-member-form .form-group{
     margin-left: 0;
     margin-right: 0;
@@ -723,6 +719,7 @@ div.wrapper{
     background-image: none;
     border: none;
     -webkit-box-shadow: none;
+    box-shadow: none;
 }
 .span3 > .module.module-narrow.social {
     display: block;
@@ -2871,6 +2868,7 @@ button.btn-primary, a.btn-primary, a.split {
   @media (max-width: 480px) {
     .nav-collapse {
       -webkit-transform: translate3d(0, 0, 0);
+      transform: translate3d(0, 0, 0);
     }
     .page-header h1 small {
       display: block;
