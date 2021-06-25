@@ -142,9 +142,10 @@ def review(id):
             reviewer = reviewer.split('/')[0]
             # reviewer is an email address
             try:
+                reviewer_list = evaluate_reviewer(reviewer, reviewer_emails, data_dict)
                 flash_message = ('Notification sent to Reviewers.', 'success')
-                log.debug('\nNotifications sent to:\nReviewers:%s\nRest: %s',
-                            reviewer_emails, addresses)
+                log.debug('\nNotifications sent to:\nReviewer:%s\nRest: %s',
+                            reviewer_list, addresses)
             except Exception as e:
                 flash_message = ("""ERROR: Mail could not be sent.
                                  Please try again later or contact the site admin.""",
@@ -171,7 +172,7 @@ def review(id):
 
     if note:
         pkg_dict = update_review_status(pkg_dict)
-        tk.get_action('package_update')(context, pkg_dict)
+        tk.get_action('package_update')(context_, pkg_dict)
         if flash_message is None:
             flash_message = ('Notification sent to Editor.', 'success')
     else:
@@ -694,12 +695,10 @@ class MembersGroupView(MethodView):
         return h.redirect_to(u'{}.members'.format(group_type), id=id)
 
     def get(self, group_type, is_organization, id=None):
-        print('!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!')
         extra_vars = {}
         set_org(is_organization)
         context_ = self._prepare(id)
         user = request.params.get(u'user')
-        print(user)
         data_dict = {u'id': id}
         data_dict['include_datasets'] = False
         group_dict = _action(u'group_show')(context_, data_dict)
@@ -726,6 +725,5 @@ class MembersGroupView(MethodView):
             u"group_type": group_type,
             u"user_dict": user_dict
         })
-        print(extra_vars.keys())
         return base.render(_replace_group_org(u'group/member_new.html'),
                            extra_vars)
