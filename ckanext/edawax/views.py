@@ -47,7 +47,7 @@ log = logging.getLogger(__name__)
 
 def check_authorization(action, context_, id):
     try:
-        check_access(action, context_, {'id': id})
+        check_access(action, context_, id)
     except tk.NotAuthorized:
         tk.abort(403, 'Unauthorized')
 
@@ -705,6 +705,7 @@ class MembersGroupView(MethodView):
         roles = _action(u'member_roles_list')(context_, {
             u'group_type': group_type
         })
+        user_dict = {}
         if user:
             user_dict = get_action(u'user_show')(context_, {u'id': user})
             user_role =\

@@ -67,7 +67,7 @@ def get_invite_body(user, data=None):
     role = _get_user_role(user.name, data['group_id'])
     if role in ['editor', 'admin']:
         return render('emails/invite_editor.txt', extra_vars)
-    elif role == 'reviewer':
+    if role == 'reviewer':
         return render('emails/invite_reviewer.txt', extra_vars)
     return render('emails/invite_author.txt', extra_vars)
 
