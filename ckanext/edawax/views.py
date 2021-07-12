@@ -11,6 +11,7 @@ import ckan.plugins.toolkit as tk
 
 import ckanext.edawax.notifications as n
 
+import ckan.authz as authz
 from ckan.authz import get_group_or_org_admin_ids
 from ckanext.edawax.helpers import is_reviewer, in_review, hide_from_reviewer, is_private, is_published, is_robot, track_download, check_reviewer_update, _existing_user #, delete_cookies
 from ckanext.edawax.update import update_maintainer_field, email_exists, invite_reviewer, add_user_to_journal
@@ -470,6 +471,11 @@ def redirect(id):
     return h.redirect_to(u'dataset.read', id=id)
 
 def create_citation(type, id):
+    check_access('package_show',
+                         {'model': model, 'session': model.Session,
+                          'user': g.user or g.author, 'for_view': True,
+                          'auth_user_obj': g.userobj},
+                          {'id': id})
     if type == 'ris':
         return create_ris_record(id)
     elif type == 'bibtex':
@@ -700,6 +706,7 @@ class MembersGroupView(MethodView):
         roles = _action(u'member_roles_list')(context, {
             u'group_type': group_type
         })
+        user_dict = {}
         if user:
             user_dict = get_action(u'user_show')(context, {u'id': user})
             user_role =\
@@ -710,16 +717,18 @@ class MembersGroupView(MethodView):
         else:
             user_role = u'member'
 
+
         # TODO: Remove
         g.group_dict = group_dict
         g.roles = roles
         g.user_role = user_role
 
-        extra_vars = {
+        extra_vars.update({
             u"group_dict": group_dict,
             u"roles": roles,
             u"user_role": user_role,
-            u"group_type": group_type
-        }
+            u"group_type": group_type,
+            u"user_dict": user_dict
+        })
         return base.render(_replace_group_org(u'group/member_new.html'),
                            extra_vars)
