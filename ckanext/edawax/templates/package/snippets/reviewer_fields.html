@@ -30,8 +30,6 @@
         time.setTime(expire);
 
         function updateCookie(e){
-            console.log(reviewer_old);
-            console.log(reviewer.value);
             if (reviewer_old != reviewer.value) {
                 document.cookie = "reviewerPrev_" + reviewer.getAttribute('resource') + "= new" + ";path=/;expires=" + time.toGMTString();
             }

@@ -4,18 +4,11 @@ the dataset is created.
 """
 
 import logging
-import datetime
 
 import ckan.logic as logic
-import ckan.plugins as plugins
 import ckan.plugins.toolkit as tk
-import ckan.lib.dictization.model_save as model_save
-import ckan.lib.navl.dictization_functions
-import ckan.lib.plugins as lib_plugins
-from ckan.common import _, request, c, g
+from ckan.common import g
 from ckan import model
-
-import ckanext.edawax.helpers as h
 
 log = logging.getLogger(__name__)
 
@@ -29,7 +22,8 @@ ValidationError = logic.ValidationError
 
 
 def email_exists(email):
-    users = tk.get_action('user_list')({'ignore_auth': True, 'keep_email': True}, {'all_fields': 'true'})
+    users = tk.get_action('user_list')({'ignore_auth': True,
+                                        'keep_email': True}, {'all_fields': 'true'})
     for user in users:
         if user['email'] == email:
             return user['name']
@@ -47,8 +41,10 @@ def update_maintainer_field(user_name, email, data_dict):
 
 
 def invite_reviewer(email, org_id):
-    log.debug(f"Inviting: {email}")
-    new_user = tk.get_action('user_invite')(None, {'email': email, 'group_id': org_id, 'role': 'reviewer'})
+    log.debug("Inviting: %s", email)
+    new_user = tk.get_action('user_invite')(None, {'email': email,
+                                                   'group_id': org_id,
+                                                   'role': 'reviewer'})
     return new_user
 
 
@@ -62,6 +58,6 @@ def add_user_to_journal(data_dict, org_id, field, role='member'):
         # if not in org, add them
         users = org_data['users']
         users.append({'name': maintainer, 'capacity': role})
-        updated = tk.get_action('organization_patch')({'ignore_auth': True}, {'id': org_id, 'users': users})
+        tk.get_action('organization_patch')({'ignore_auth': True}, {'id': org_id, 'users': users})
 
     return True

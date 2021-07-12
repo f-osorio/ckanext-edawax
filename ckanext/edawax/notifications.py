@@ -1,31 +1,34 @@
 import smtplib
-from email.header import Header
-from email import utils
-from email.mime.text import MIMEText
-from time import time
-from ckan.common import config, g
 import logging
+
+from time import time
+from email import utils
+from email.header import Header
+from email.mime.text import MIMEText
+
+from ckanext.edawax.helpers import pkg_status
+
+from ckan.common import config, g
 import ckan.plugins.toolkit as tk
 from ckan import __version__ as ckan_version
-from ckanext.edawax.helpers import pkg_status
-import ckan.lib.mailer as mailer
+
 
 log = logging.getLogger(__name__)
 
 
 def sendmail(address, msg):
-    log.info(f'Sending Notifcation to: {address}')
+    log.info('Sending Notifcation to: %s', address)
     mail_from = config.get('smtp.mail_from')
     try:
         smtp_server = config.get('smtp.test_server', config.get('smtp.server'))
         smtp_connection = smtplib.SMTP(smtp_server)
         smtp_connection.sendmail(mail_from, [address], msg.as_string())
-        log.info(f"Sent notification to {address}")
+        log.info('Sent notification to %s', address)
         smtp_connection.quit()
         return True
     except Exception as e:
-        log.error(f"Mail to {address} could not be sent")
-        log.error(f"{e}")
+        log.error("Mail to %s could not be sent", address)
+        log.error("%s", e)
         return False
 
 
@@ -100,13 +103,13 @@ def create_message(msg):
     return u""
 
 
-def compose_message(typ, body, subject, config, send_to, context=None):
+def compose_message(typ, body, subject, config_, send_to, context=None):
     # used by editor and reauthor
     reviewer_email = tk.get_action('user_show')(context, {'id': g.user})['email']
 
     msg = MIMEText(body.encode('utf-8'), 'plain', 'utf-8')
     msg['Subject'] = Header(subject)
-    msg['From'] = config.get('smtp.mail_from')
+    msg['From'] = config_.get('smtp.mail_from')
     if typ in ['editor', 'reauthor']:
         msg['Cc'] = reviewer_email
     #msg['To'] = Header(send_to, 'utf-8')
@@ -188,7 +191,8 @@ def review(addresses, author, dataset, reviewers=None, msg=None):
         if reviewers is not None:
             for reviewer in reviewers:
                 if reviewer not in [None, '', u'']:
-                    t.append(sendmail(reviewer.split('/')[0], message("review_reviewer", reviewer.split('/')[0])))
+                    t.append(sendmail(reviewer.split('/')[0],
+                        message("review_reviewer", reviewer.split('/')[0])))
         else:
             # want to return something so that there's no error message
             # previously, this condition would have triggered an email to the editors

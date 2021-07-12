@@ -10,6 +10,7 @@
       {% if not h.check_reviewer_update(pkg) %}
         <a title="Update reviewer"
             class="btn btn-reviewer"
+            id="update_reviewer"
             href="/dataset/edit/{{ pkg.id }}#dataset_reviewers">
           {%- if h.has_reviewers(pkg) -%}
             <i class="fa fa-refresh"></i>
@@ -32,11 +33,9 @@
         update_button.addEventListener('click', removeCookie);
 
         function removeCookie(e){
-            var time = new Date();
-
-            var cookies = document.cookie.split('; ');
-            var target = cookies.find(row => row.startsWith('reviewerPrev_')).split('=')[0];
-            document.cookie = target + "=old";
+          var cookies = document.cookie.split('; ');
+          var target = cookies.find(row => row.startsWith('reviewerPrev_')).split('=')[0];
+          document.cookie = target + "=old; path=/";
         }
     </script>
 

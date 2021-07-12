@@ -1,31 +1,36 @@
+import os
+import time
+import zipfile
 import io
 import re
 import ast
-import six
 import hashlib
 import logging
-from ckan import model
-from ckan.common import g, request, config, streaming_response
-import ckan.lib.helpers as h
-import ckan.plugins.toolkit as tk
-
-import ckanext.edawax.notifications as n
-
-import ckan.authz as authz
-from ckan.authz import get_group_or_org_admin_ids
-from ckanext.edawax.helpers import is_reviewer, in_review, hide_from_reviewer, is_private, is_published, is_robot, track_download, check_reviewer_update, _existing_user #, delete_cookies
-from ckanext.edawax.update import update_maintainer_field, email_exists, invite_reviewer, add_user_to_journal
-
-from ckanext.dara.helpers import check_journal_role
-
 from functools import wraps
 
+import six
 import flask
-# Create Memver
 from flask.views import MethodView
+
+import ckanext.edawax.notifications as n
+from ckanext.edawax.helpers import is_reviewer, \
+        is_published, is_robot, track_download, \
+        check_reviewer_update, _existing_user
+from ckanext.edawax.update import update_maintainer_field, invite_reviewer
+from ckanext.dara.helpers import check_journal_role
+from ckanext.dara.helpers import _parse_authors
+
+from ckan import model
+from ckan.common import g, request, config
+import ckan.lib.helpers as h
+import ckan.plugins.toolkit as tk
+import ckan.authz as authz
+from ckan.authz import get_group_or_org_admin_ids
 import ckan.lib.base as base
 import ckan.logic as logic
 import ckan.lib.navl.dictization_functions as dict_fns
+import ckan.lib.uploader as uploader
+
 
 NotFound = logic.NotFound
 NotAuthorized = logic.NotAuthorized
@@ -36,25 +41,20 @@ tuplize_dict = logic.tuplize_dict
 clean_dict = logic.clean_dict
 parse_params = logic.parse_params
 
-# for download all
-import os
-import io
-import time
-import zipfile
-import requests
-from ckanext.dara.helpers import _parse_authors
-import ckan.lib.uploader as uploader
-import flask
-
+is_org = False
 log = logging.getLogger(__name__)
 
 
-"""
-START Workflow
-"""
+def check_authorization(action, context_, id):
+    try:
+        check_access(action, context_, id)
+    except tk.NotAuthorized:
+        tk.abort(403, 'Unauthorized')
+
+
 def admin_req(func):
     @wraps(func)
-    def check(*args, **kwargs):
+    def check(**kwargs):
         id = kwargs['id']
         pkg = tk.get_action('package_show')(None, {'id': id})
         if not check_journal_role(pkg, 'admin') and not h.check_access('sysadmin'):
@@ -62,10 +62,12 @@ def admin_req(func):
         return func(id)
     return check
 
+
 def _context():
     return {'model': model, 'session': model.Session,
             'user': g.user or g.author, 'for_view': True,
             'auth_user_obj': g.userobj, 'save': 'save' in request.params}
+
 
 def evaluate_reviewer(reviewer, reviewer_list, data_dict):
     """ Check if reviewer exists or not. Returns list of reviewer emails """
@@ -85,15 +87,15 @@ def evaluate_reviewer(reviewer, reviewer_list, data_dict):
             reviewer_list = []
         else:
             # Reviewer has already been invited, a notification will be sent
-            context = _context()
-            context['ignore_auth'] = True
-            users = tk.get_action('user_list')(context, {'email': reviewer})
+            context_ = _context()
+            context_['ignore_auth'] = True
+            users = tk.get_action('user_list')(context_, {'email': reviewer})
             update_maintainer_field(users[0]['name'], reviewer, data_dict)
             reviewer_list.append(reviewer)
 
     else:
         h.flash_error("Reviewers must be given as email addresses.")
-        log.debug(f"Reviewers aren't an email address: '{reviewer}'")
+        log.debug("Reviewers aren't an email address: %s", reviewer)
         return redirect(id)
     return reviewer_list
 
@@ -105,24 +107,19 @@ def review(id):
     to the JDA as a reviewer - need a new invitation that includes a link
     to the dataset for review.
     """
-    # TODO: Look into allowing collaborators as reviewers?
-    context = _context()
-    pkg_dict = tk.get_action('package_show')(context, {'id': id})
+    #TODO: Look into allowing collaborators as reviewers?
+    context_ = _context()
+    pkg_dict = tk.get_action('package_show')(context_, {'id': id})
 
     # Ensure a 'draft' isn't sent for review
     state = pkg_dict['state']
     if state == 'draft':
         data = {'id': pkg_dict['id'], u'state': u'active'}
-        context['ignore_auth'] = True
-        t = tk.get_action('package_patch')(context, data)
+        context_['ignore_auth'] = True
+        tk.get_action('package_patch')(context_, data)
         pkg_dict['state'] = 'active'
 
-    #delete_cookies(pkg_dict)
-
-    try:
-        tk.check_access('package_update', context, {'id': id})
-    except tk.NotAuthorized:
-        tk.abort(403, 'Unauthorized')
+    check_authorization('package_update', context_, {'id': id})
 
     # avoid multiple notifications (eg. when someone calls review directly)
     if pkg_dict.get('dara_edawax_review', 'false') == 'true':
@@ -137,29 +134,31 @@ def review(id):
     reviewer = data_dict.get("maintainer", None)
     reviewer_emails = []
     flash_message = None
-    context['keep_email'] = True
+    context_['keep_email'] = True
 
     try:
         # If there is a reviewer
-        if reviewer != '':
-            if reviewer is not None:
-                reviewer = reviewer.split('/')[0]
-                # reviewer is an email address
-                try:
-                    reviewer_list = evaluate_reviewer(reviewer, reviewer_emails, data_dict)
-                    flash_message = ('Notification sent to Reviewers.', 'success')
-                    log_msg = '\nNotifications sent to:\nReviewers:{}\nRest: {}'
-                    log.debug(log_msg.format(reviewer_emails, addresses))
-                except Exception as e:
-                    flash_message = ('ERROR: Mail could not be sent. Please try again later or contact the site admin.', 'error')
-                    log.debug('Failed to send notifications')
-                    log.error(f'ERROR: {e}')
+        if reviewer != '' and reviewer is not None:
+            reviewer = reviewer.split('/')[0]
+            # reviewer is an email address
+            try:
+                reviewer_list = evaluate_reviewer(reviewer, reviewer_emails, data_dict)
+                flash_message = ('Notification sent to Reviewers.', 'success')
+                log.debug('\nNotifications sent to:\nReviewer:%s\nRest: %s',
+                            reviewer_list, addresses)
+            except Exception as e:
+                flash_message = ("""ERROR: Mail could not be sent.
+                                 Please try again later or contact the site admin.""",
+                                 'error')
+                log.debug('Failed to send notifications')
+                log.error('ERROR: %s', e)
     except Exception as e:
-        log.error(f"Error with reviewer notifications: {e.message}-{e.args}")
+        log.error("Error with reviewer notifications: %s %s", e, e.args)
         log.error(reviewer_emails)
 
     # the author is sending the dataset to the editor, there are no reviewers
     # Or it is coming back from being reworked by the author
+    note = False
     if flash_message is None \
         and (reviewer_emails == []) \
             or data_dict['dara_edawax_review'] in ['reauthor', 'false']:
@@ -170,16 +169,15 @@ def review(id):
     elif flash_message and (reviewer_emails == []):
         # if there is a flash message and no reviewers, an invitation was sent
         note = True
-    else:
-        note = False
 
     if note:
         pkg_dict = update_review_status(pkg_dict)
-        tk.get_action('package_update')(context, pkg_dict)
+        tk.get_action('package_update')(context_, pkg_dict)
         if flash_message is None:
             flash_message = ('Notification sent to Editor.', 'success')
     else:
-        flash_message = ('Error: Mail could not be sent. Please try again later or contact the site admin.', 'error')
+        flash_message = ('Error: Mail could not be sent. Please try again'\
+            ' later or contact the site admin.', 'error')
 
     if flash_message[1] == 'success':
         h.flash_success(flash_message[0])
@@ -189,7 +187,7 @@ def review(id):
     return redirect(id)
 
 
-def update_review_status(pkg_dict, action=None):
+def update_review_status(pkg_dict):
     """
         Update the status of "dara_edawax_review"
         Status:
@@ -227,8 +225,8 @@ def publish(id):
     """
     publish dataset
     """
-    context = _context()
-    pkg_dict = tk.get_action('package_show')(context, {'id': id})
+    context_ = _context()
+    pkg_dict = tk.get_action('package_show')(context_, {'id': id})
 
     # validate the DOI, if any
     try:
@@ -239,21 +237,21 @@ def publish(id):
         type_ = ''
 
     if type_ == 'DOI':
-        pattern = re.compile('^10.\d{4,9}/[-._;()/:a-zA-Z0-9]+$')
+        pattern = re.compile(r'^10.\d{4,9}/[-._;()/:a-zA-Z0-9]+$')
         match = pattern.match(doi)
         if match is None:
-            h.flash_error('DOI is invalid. Format should be: 10.xxxx/xxxx. Please update the DOI before trying again to publish this resource. <a href="#doi" style="color: blue;">Jump to field.</a>', True)
-            errors = {'dara_Publication_PID': ['DOI is invalid. Format should be: 10.xxxx/xxxx']}
+            h.flash_error("""DOI is invalid. Format should be: 10.xxxx/xxxx.
+                           Please update the DOI before trying again to publish
+                           this resource. <a href="#doi" style="color: blue;">
+                           Jump to field.</a>""", True)
 
             return h.redirect_to('dataset.edit', id=id)
 
     pkg_dict.update({'private': False, 'dara_edawax_review': 'reviewed'})
-    pkg = context.get('package')
     tk.get_action('package_update')(context, pkg_dict)
     h.flash_success('Dataset published')
     author_notify(id)
     return redirect(id)
-
 
 
 @admin_req
@@ -261,8 +259,8 @@ def retract(id):
     """
     set dataset private and back to review state
     """
-    context = _context()
-    pkg_dict = tk.get_action('package_show')(context, {'id': id})
+    context_ = _context()
+    pkg_dict = tk.get_action('package_show')(context_, {'id': id})
 
     if pkg_dict.get('dara_DOI_Test', False) and not h.check_access('sysadmin'):
         h.flash_error("ERROR: DOI (Test) already assigned, dataset can't be retracted")
@@ -273,7 +271,7 @@ def retract(id):
         return redirect(id)
 
     pkg_dict.update({'private': True, 'dara_edawax_review': 'false'})
-    tk.get_action('package_update')(context, pkg_dict)
+    tk.get_action('package_update')(context_, pkg_dict)
 
     # notify author about the retraction
     author_notify(id)
@@ -287,22 +285,20 @@ def reauthor(id):
     Reset dataset to private and leave review state.
     Should also send email to author
     """
-    context = _context()
+    context_ = _context()
     msg = request.form.get('msg', '')
-    pkg_dict = tk.get_action('package_show')(context, {'id': id})
-    #delete_cookies(pkg_dict)
+    pkg_dict = tk.get_action('package_show')(context_, {'id': id})
     creator_mail = model.User.get(pkg_dict['creator_user_id']).email
-    admin_mail = model.User.get(g.user).email
-    #note = n.reauthor(id, creator_mail, admin_mail, msg, context)
-    note = n.notify('reauthor', id, creator_mail, msg, context)
+    note = n.notify('reauthor', id, creator_mail, msg, context_)
 
     if note:
         pkg_dict.update({'private': True,
                             'dara_edawax_review': 'reauthor'})
-        tk.get_action('package_update')(context, pkg_dict)
+        tk.get_action('package_update')(context_, pkg_dict)
         h.flash_success('Notification sent. Dataset can now be re-edited by author')
     else:
-        h.flash_error('ERROR: Mail could not be sent. Please try again later or contact the site admin.')
+        h.flash_error("""ERROR: Mail could not be sent.
+                      Please try again later or contact the site admin.""")
     return redirect(id)
 
 
@@ -310,41 +306,43 @@ def editor_notify(id):
     """
     Send from reviewer back to editor
     """
-    context = _context()
+    context_ = _context()
     msg = request.form.get('msg', '')
-    pkg_dict = tk.get_action('package_show')(context, {'id': id})
+    pkg_dict = tk.get_action('package_show')(context_, {'id': id})
     creator_mail = model.User.get(pkg_dict['creator_user_id']).email
-    note = n.notify('editor', id, creator_mail, msg, context)
+    note = n.notify('editor', id, creator_mail, msg, context_)
 
     if note:
         pkg_dict.update({'private': True, 'dara_edawax_review': 'back'})
-        tk.get_action('package_update')(context, pkg_dict)
+        tk.get_action('package_update')(context_, pkg_dict)
         h.flash_success('Notification sent. Journal Editor will be notified.')
     else:
-        h.flash_error('ERROR: Mail could not be sent. Please try again later or contact the site admin.')
+        h.flash_error("""ERROR: Mail could not be sent. Please try again later
+                         or contact the site admin.""")
     return redirect(id)
 
 
 def author_notify(id):
     """ Send mail from the system to the author """
-    context = _context()
+    context_ = _context()
     msg = request.form.get('msg', '')
-    pkg_dict = tk.get_action('package_show')(context, {'id': id})
+    pkg_dict = tk.get_action('package_show')(context_, {'id': id})
 
     if pkg_dict['dara_edawax_review'] == 'reviewed':
         status = 'published'
     else:
         status = 'retracted'
     author_email = model.User.get(pkg_dict['creator_user_id']).email
-    note = n.notify('author', id, author_email, msg, context, status)
+    note = n.notify('author', id, author_email, msg, context_, status)
+    log.info('Sent notifications: %s ', note)
 
 
 def create_citataion_text(id):
     """ Create a plain text file with a citation. Will be included in
         the "download_all" zip file
         """
-    context = _context()
-    data = tk.get_action('package_show')(context, {'id': id})
+    context_ = _context()
+    data = tk.get_action('package_show')(context_, {'id': id})
 
     citation = u'{authors} ({year}): {dataset}. Version: {version}. {journal}. Dataset. {address}'
 
@@ -389,15 +387,15 @@ def download_all(id):
     referrer = request.referrer
     if referrer:
         data = {}
-        context = _context()
-        pkg_dict = tk.get_action('package_show')(context, {'id': id})
+        context_ = _context()
+        pkg_dict = tk.get_action('package_show')(context_, {'id': id})
         zip_sub_dir = 'resources'
         title = pkg_dict['title'].replace(' ', '_').replace(',', '_')
         time_ = time.time()
         zip_name = f"{title}_resouces_{time_}.zip"
         resources = pkg_dict['resources']
         for resource in resources:
-            rsc = tk.get_action('resource_show')(context, {'id': resource['id']})
+            rsc = tk.get_action('resource_show')(context_, {'id': resource['id']})
             if rsc.get('url_type') == 'upload' and not is_robot(request.user_agent):
                 agent = request.user_agent
                 remote_addr = request.remote_addr
@@ -412,14 +410,14 @@ def download_all(id):
                     filepath = upload.get_path(rsc[u'id'])
                     data[filename] = filepath
                     if is_published(url):
-                        added, msg = track_download(url, filename, key)
+                        added, msg = track_download(url, key)
                     else:
                         added = False
                         msg = 'Not published'
                     if added:
-                        log.info(f'Tracked: {url}')
+                        log.info('Tracked: %s', url)
                     else:
-                        log.error(f'Didn\'t track: {url} - {msg}')
+                        log.error('Didn\'t track: %s - %s', url, msg)
                 except Exception as e:
                     print(f'Error: {e}')
 
@@ -440,50 +438,43 @@ def download_all(id):
     h.flash_error('Nothing to download.')
     return redirect(id)
 
-"""
-END Workflow
-"""
 
-
-"""
-START INFO Views
-"""
 TEMPLATE = "info_index.html"
+
 
 def index():
     return tk.render(TEMPLATE, extra_vars={'page': 'index'})
 
-def md_page(id):
+
+def md_page():
     plist = tk.request.path.rsplit('/', 1)
     return tk.render(TEMPLATE, extra_vars={'page': plist[-1]})
 
-
-"""
-END INFO Views
-"""
 
 def context():
     return {'model': model, 'session': model.Session,
            'user': g.user or g.author, 'for_view': True,
            'auth_user_obj': g.userobj, 'ignore_auth': True}
 
+
 def redirect(id):
     return h.redirect_to(u'dataset.read', id=id)
 
-def create_citation(type, id):
+
+def create_citation(kind, id):
     check_access('package_show',
                          {'model': model, 'session': model.Session,
                           'user': g.user or g.author, 'for_view': True,
                           'auth_user_obj': g.userobj},
                           {'id': id})
-    if type == 'ris':
+    if kind == 'ris':
         return create_ris_record(id)
-    elif type == 'bibtex':
+    if kind == 'bibtex':
         return create_bibtex_record(id)
-        return r
-    else:
-        h.flash_error(f"Couldn't build {type} citation.")
-        return redirect(id)
+
+    h.flash_error(f"Couldn't build {kind} citation.")
+    return redirect(id)
+
 
 def parse_ris_authors(authors):
     out = ''
@@ -495,7 +486,6 @@ def parse_ris_authors(authors):
 
 
 def parse_bibtex_authors(authors):
-    temp_str = ''
     temp_list = []
     authors = ast.literal_eval(authors.replace("null", "None"))
     for author in authors:
@@ -506,11 +496,11 @@ def parse_bibtex_authors(authors):
         return temp_list[0]
 
 
-
 def parse_ris_doi(doi):
     if doi != '':
         return f'DO  - doi:{doi}\n'
     return ''
+
 
 def create_ris_record(id):
     pkg_dict = tk.get_action('package_show')(context(), {'id': id})
@@ -525,10 +515,6 @@ def create_ris_record(id):
                 authors = pkg_dict['author'] or ''
             authors = ''
     date = pkg_dict.get('dara_PublicationDate', '????')
-    try:
-        journal = pkg_dict['organization']['title']
-    except TypeError as e:
-        journal = ''
     site_url = config.get('ckan.site_url')
     title = pkg_dict['name']
     url = f'{site_url}/dataset/{title}'
@@ -552,7 +538,15 @@ def create_ris_record(id):
     else:
         jels = ''
 
-    contents = f"TY  - DATA\nT1  - {title}\n{authors}{doi}{abstract}{jels}ET  - {version}\nPY  - {date}\nPB  - ZBW - Leibniz Informationszentrum Wirtschaft\nUR  - {url}\nER  - \n"
+    contents = (
+                "TY  - DATA"
+                f"\nT1  - {title}"
+                f"\n{authors}{doi}{abstract}{jels}ET  - {version}"
+                f"\nPY  - {date}"
+                "\nPB  - ZBW - Leibniz Informationszentrum Wirtschaft"
+                f"\nUR  - {url}"
+                "\nER  -"
+            )
 
     file = io.BytesIO()
     file.write(str.encode(contents))
@@ -577,10 +571,6 @@ def create_bibtex_record(id):
                 authors = pkg_dict['author'] or ''
             authors = ''
     date = pkg_dict.get('dara_PublicationDate', '????')
-    try:
-        journal = pkg_dict['organization']['title'].encode('utf-8')
-    except TypeError as e:
-        journal = ''
     site_url = config.get('ckan.site_url')
     title = pkg_dict['name']
     url = f'{site_url}/dataset/{title}'
@@ -606,7 +596,16 @@ def create_bibtex_record(id):
     else:
         jels = ''
 
-    contents = f'@data{{{identifier},\nauthor = {{{authors}}},\npublisher = {{ZBW - Leibniz Informationszentrum Wirtschaft}},\ntitle = {{{title}}},\nyear = {{{date}}},\nversion = {{{version}}},\nurl = {{{url}}}{jels}{doi} \n}}'
+    contents = (
+                f"@data{{{identifier},"
+                f"\nauthor = {{{authors}}},"
+                "\npublisher = {{ZBW - Leibniz Informationszentrum Wirtschaft}},"
+                f"\ntitle = {{{title}}},"
+                f"\nyear = {{{date}}},"
+                f"\nversion = {{{version}}},"
+                f"\nurl = {{{url}}}{jels}{doi}"
+                "\n}}"
+            )
 
     file = io.BytesIO()
     file.write(str.encode(contents))
@@ -644,22 +643,23 @@ class MembersGroupView(MethodView):
     u'''New members group view'''
 
     def _prepare(self, id=None):
-        context = {
+        context_ = {
             u'model': model,
             u'session': model.Session,
             u'user': g.user
         }
-        try:
-            _check_access(u'group_member_create', context, {u'id': id})
-        except NotAuthorized:
-            base.abort(403,
-                       _(u'Unauthorized to create group %s members') % u'')
+        check_authorization('group_member_create', context_, {'id': id}, )
 
-        return context
+        #try:
+        #    _check_access(u'group_member_create', context_, {u'id': id})
+        #except NotAuthorized:
+        #    base.abort(403, u'Unauthorized to create group %s members' % u'')
+
+        return context_
 
     def post(self, group_type, is_organization, id=None):
         set_org(is_organization)
-        context = self._prepare(id)
+        context_ = self._prepare(id)
         data_dict = clean_dict(
             dict_fns.unflatten(tuplize_dict(parse_params(request.form))))
         data_dict['id'] = id
@@ -673,16 +673,16 @@ class MembersGroupView(MethodView):
                 u'role': data_dict['role']
             }
             del data_dict['email']
-            user_dict = _action(u'user_invite')(context, user_data_dict)
+            user_dict = _action(u'user_invite')(context_, user_data_dict)
             data_dict['username'] = user_dict['name']
 
         if data_dict['username']:
             try:
-                group_dict = _action(u'group_member_create')(context, data_dict)
+                group_dict = _action(u'group_member_create')(context_, data_dict)
             except NotAuthorized:
-                base.abort(403, _(u'Unauthorized to add member to group %s') % u'')
+                base.abort(403, u'Unauthorized to add member to group %s' % u'')
             except NotFound:
-                base.abort(404, _(u'Group not found'))
+                base.abort(404, u'Group not found')
             except ValidationError as e:
                 h.flash_error(e.error_summary)
                 return h.redirect_to(u'journals.member_new', id=id)
@@ -690,7 +690,6 @@ class MembersGroupView(MethodView):
             h.flash_error(f"The email address '{email}' belongs to a registered user.")
             return h.redirect_to(u'journals.member_new', id=id)
 
-        # TODO: Remove
         g.group_dict = group_dict
 
         return h.redirect_to(u'{}.members'.format(group_type), id=id)
@@ -698,27 +697,24 @@ class MembersGroupView(MethodView):
     def get(self, group_type, is_organization, id=None):
         extra_vars = {}
         set_org(is_organization)
-        context = self._prepare(id)
+        context_ = self._prepare(id)
         user = request.params.get(u'user')
         data_dict = {u'id': id}
         data_dict['include_datasets'] = False
-        group_dict = _action(u'group_show')(context, data_dict)
-        roles = _action(u'member_roles_list')(context, {
+        group_dict = _action(u'group_show')(context_, data_dict)
+        roles = _action(u'member_roles_list')(context_, {
             u'group_type': group_type
         })
         user_dict = {}
         if user:
-            user_dict = get_action(u'user_show')(context, {u'id': user})
+            user_dict = get_action(u'user_show')(context_, {u'id': user})
             user_role =\
                 authz.users_role_for_group_or_org(id, user) or u'member'
-            # TODO: Remove
             g.user_dict = user_dict
             extra_vars["user_dict"] = user_dict
         else:
             user_role = u'member'
 
-
-        # TODO: Remove
         g.group_dict = group_dict
         g.roles = roles
         g.user_role = user_role
