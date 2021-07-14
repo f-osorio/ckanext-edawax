@@ -442,6 +442,7 @@ class EdawaxPlugin(plugins.SingletonPlugin):
                 'update_citation': helpers.update_citation,
                 'get_facets': get_facet_items_dict,
                 'make_schema_metadata': helpers.make_schema_metadata,
+                'is_collaborator': helpers.is_collaborator,
                 }
 
     def get_blueprint(self):

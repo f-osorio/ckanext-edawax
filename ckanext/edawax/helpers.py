@@ -5,6 +5,7 @@ import json
 import hashlib
 import sqlalchemy as sa
 
+import ckan.authz as authz
 import ckan.plugins.toolkit as tk
 import ckan.model as model
 from ckan.common import c, g, streaming_response, _, request, config
@@ -279,6 +280,11 @@ def is_reviewer(pkg):
 
 def is_author(pkg):
     return get_user_id() == pkg['creator_user_id']
+
+def is_collaborator(package_id):
+    user_id = get_user_id()
+    capacity = None  # can take a list
+    return authz.user_is_collaborator_on_dataset(user_id, package_id, capacity)
 
 
 def count_packages(packages):
